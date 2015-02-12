@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<!-- Human-readable information -->
+	
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Spatial description schema for multiscale multidimensional model checking.
+			Copyright 2014 Ovidiu Parvu. 
+		</xs:documentation>
+	</xs:annotation>
+
+	<!-- Elements -->
+	
+	<xs:element name="spatialDescription" type="SpatialDescriptionType" />
+
+	<!-- User-defined complex types -->
+	
+	<xs:complexType name="SpatialDescriptionType">
+		<xs:sequence>
+			<xs:element name="spatialEntities" type="SpatialEntitiesType" >
+				<!-- The spatial entities' names must be unique -->
+				
+				<xs:unique name="UniqueSpatialEntities">
+					<xs:selector xpath="spatialEntity" />
+					<xs:field xpath="name" />
+				</xs:unique>
+			</xs:element>
+			<xs:element name="spatialMeasures" type="SpatialMeasuresType">
+				<!-- The spatial measures' names must be unique -->
+					
+				<xs:unique name="UniqueSpatialMeasures">
+					<xs:selector xpath="spatialMeasure" />
+					<xs:field xpath="name" />
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SpatialEntitiesType">
+		<xs:sequence>
+			<xs:element name="spatialEntity" type="SingleSpatialEntityType" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SpatialMeasuresType">
+		<xs:sequence>
+			<xs:element name="spatialMeasure" type="SingleSpatialMeasureType" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="SingleSpatialEntityType">
+		<xs:sequence>
+			<xs:element name="name" type="AlphaLowerCaseStartingString" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SingleSpatialMeasureType">
+		<xs:sequence>
+			<xs:element name="name" type="AlphaLowerCaseStartingString" />
+			<xs:element name="description" type="NonEmptyStringType" />
+			<xs:element name="minValue" type="xs:double" />
+			<xs:element name="maxValue" type="xs:double" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<!-- User-defined simple types -->
+
+	<xs:simpleType name="AlphaLowerCaseStartingString">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z][a-zA-Z]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="NonEmptyStringType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>
