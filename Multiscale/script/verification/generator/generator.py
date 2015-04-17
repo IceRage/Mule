@@ -41,7 +41,7 @@ WRN_AUTO_GENERATED_FILE = [
 # The number of time points to be included in each unit test
 UNIT_TESTS_NR_OF_TIMEPOINTS = 12
   
-PROJECT_ROOT_FOLDER = "/home/ovidiu/Temp/Mule/Multiscale"
+PROJECT_ROOT_FOLDER = "/home/ovidiu/Repositories/git/multiscale/Multiscale"
 MODEL_CHECKING_FOLDER = PROJECT_ROOT_FOLDER + str(
     "/modules/verification/spatial-temporal"                                  
 ) 

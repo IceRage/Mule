@@ -16,7 +16,7 @@ TEST(MultiscaleArchitectureGraph, InvalidMultiscaleArchitectureGraphDisconnected
 
     EXPECT_THROW(
         multiscaleArchitectureGraph.readFromFile(
-            "/home/ovidiu/Temp/Mule/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_disconnected.xml"
+            "/home/ovidiu/Repositories/git/multiscale/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_disconnected.xml"
         ),
         SpatialTemporalException
     );
@@ -27,7 +27,7 @@ TEST(MultiscaleArchitectureGraph, InvalidMultiscaleArchitectureGraphNoRoot) {
 
     EXPECT_THROW(
         multiscaleArchitectureGraph.readFromFile(
-            "/home/ovidiu/Temp/Mule/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_no_root.xml"
+            "/home/ovidiu/Repositories/git/multiscale/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_no_root.xml"
         ),
         SpatialTemporalException
     );
@@ -38,7 +38,7 @@ TEST(MultiscaleArchitectureGraph, InvalidMultiscaleArchitectureGraphNonUniquePat
 
     EXPECT_THROW(
         multiscaleArchitectureGraph.readFromFile(
-            "/home/ovidiu/Temp/Mule/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_non_unique_path_to_vertex.xml"
+            "/home/ovidiu/Repositories/git/multiscale/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_invalid_non_unique_path_to_vertex.xml"
         ),
         SpatialTemporalException
     );
@@ -49,7 +49,7 @@ TEST(MultiscaleArchitectureGraph, ValidMultiscaleArchitectureGraph) {
 
     EXPECT_NO_THROW(
         multiscaleArchitectureGraph.readFromFile(
-            "/home/ovidiu/Temp/Mule/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_valid.xml"
+            "/home/ovidiu/Repositories/git/multiscale/Multiscale/data/test/verification/spatial-temporal/src/mule/multiscale_architecture_graph/multiscale_architecture_graph_valid.xml"
         )
     );
 }
