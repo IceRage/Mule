@@ -33,9 +33,9 @@ CommandLineModelChecking::CommandLineModelChecking()
 
 CommandLineModelChecking::~CommandLineModelChecking() {}
 
-void CommandLineModelChecking::initialise(int argc, char **argv) {
+void CommandLineModelChecking::initialize(int argc, char **argv) {
     if (areValidArguments(argc, argv)) {
-        initialiseClassMembers();
+        initializeClassMembers();
         printModelCheckingInitialisationMessage();
     } else if (isHelpArgumentPresent()) {
         handleHelpRequest();
@@ -49,40 +49,40 @@ void CommandLineModelChecking::execute() {
 }
 
 bool CommandLineModelChecking::areValidArguments(int argc, char **argv) {
-    initialiseAllowedArgumentsConfiguration();
+    initializeAllowedArgumentsConfiguration();
 
     return areValidArgumentsConsideringConfiguration(argc, argv);
 }
 
-void CommandLineModelChecking::initialiseAllowedArgumentsConfiguration() {
-    initialiseRequiredArgumentsConfiguration();
-    initialiseOptionalArgumentsConfiguration();
-    initialiseModelCheckerTypeSpecificArgumentsConfiguration();
+void CommandLineModelChecking::initializeAllowedArgumentsConfiguration() {
+    initializeRequiredArgumentsConfiguration();
+    initializeOptionalArgumentsConfiguration();
+    initializeModelCheckerTypeSpecificArgumentsConfiguration();
 
     allowedArguments.add(requiredArguments)
                     .add(optionalArguments)
                     .add(modelCheckerTypeSpecificArguments);
 }
 
-void CommandLineModelChecking::initialiseRequiredArgumentsConfiguration() {
+void CommandLineModelChecking::initializeRequiredArgumentsConfiguration() {
     requiredArguments.add_options()(ARG_LOGIC_QUERIES_NAME_BOTH.c_str()             , po::value<std::string>()->required()      , (ARG_LOGIC_QUERIES_DESCRIPTION + "\n").c_str())
                                    (ARG_SPATIAL_TEMPORAL_TRACES_NAME_BOTH.c_str()   , po::value<std::string>()->required()      , (ARG_SPATIAL_TEMPORAL_TRACES_DESCRIPTION + "\n").c_str())
                                    (ARG_EXTRA_EVALUATION_TIME_NAME_BOTH.c_str()     , po::value<unsigned long>()->required()    , (ARG_EXTRA_EVALUATION_TIME_DESCRIPTION + "\n").c_str())
                                    (ARG_MODEL_CHECKER_TYPE_NAME_BOTH.c_str()        , po::value<unsigned int>()->required()     , (ARG_MODEL_CHECKER_TYPE_DESCRIPTION + "\n").c_str());
 }
 
-void CommandLineModelChecking::initialiseOptionalArgumentsConfiguration() {
-    optionalArguments.add_options()(ARG_HELP_NAME_BOTH.c_str()                                                  , (ARG_HELP_DESCRIPTION + "\n").c_str())
-                                   (ARG_EXTRA_EVALUATION_PROGRAM_NAME_BOTH.c_str() , po::value<std::string>()   , (ARG_EXTRA_EVALUATION_PROGRAM_DESCRIPTION + "\n").c_str())
-                                   (ARG_TYPE_SEMANTICS_TABLE_NAME_BOTH.c_str()     , po::value<std::string>()   , (ARG_TYPE_SEMANTICS_TABLE_DESCRIPTION + "\n").c_str())
-                                   (ARG_VERBOSE_NAME_BOTH.c_str()                  , po::bool_switch()          , (ARG_VERBOSE_DESCRIPTION + "\n").c_str());
+void CommandLineModelChecking::initializeOptionalArgumentsConfiguration() {
+    optionalArguments.add_options()(ARG_HELP_NAME_BOTH.c_str()                                                          , (ARG_HELP_DESCRIPTION + "\n").c_str())
+                                   (ARG_EXTRA_EVALUATION_PROGRAM_NAME_BOTH.c_str()          , po::value<std::string>()  , (ARG_EXTRA_EVALUATION_PROGRAM_DESCRIPTION + "\n").c_str())
+                                   (ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_BOTH.c_str()     , po::value<std::string>()  , (ARG_MULTISCALE_ARCHITECTURE_GRAPH_DESCRIPTION + "\n").c_str())
+                                   (ARG_VERBOSE_NAME_BOTH.c_str()                           , po::bool_switch()         , (ARG_VERBOSE_DESCRIPTION + "\n").c_str());
 }
 
-void CommandLineModelChecking::initialiseModelCheckerTypeSpecificArgumentsConfiguration() {
-    auto statisticalArguments               = initialiseStatisticalModelCheckerArgumentsConfiguration();
-    auto approximateProbabilisticArguments  = initialiseApproximateProbabilisticModelCheckerArgumentsConfiguration();
-    auto bayesianArguments                  = initialiseBayesianModelCheckerArgumentsConfiguration();
-    auto approximateBayesianArguments       = initialiseApproximateBayesianModelCheckerArgumentsConfiguration();
+void CommandLineModelChecking::initializeModelCheckerTypeSpecificArgumentsConfiguration() {
+    auto statisticalArguments               = initializeStatisticalModelCheckerArgumentsConfiguration();
+    auto approximateProbabilisticArguments  = initializeApproximateProbabilisticModelCheckerArgumentsConfiguration();
+    auto bayesianArguments                  = initializeBayesianModelCheckerArgumentsConfiguration();
+    auto approximateBayesianArguments       = initializeApproximateBayesianModelCheckerArgumentsConfiguration();
 
     modelCheckerTypeSpecificArguments.add(statisticalArguments)
                                      .add(approximateProbabilisticArguments)
@@ -90,7 +90,7 @@ void CommandLineModelChecking::initialiseModelCheckerTypeSpecificArgumentsConfig
                                      .add(approximateBayesianArguments);
 }
 
-po::options_description CommandLineModelChecking::initialiseStatisticalModelCheckerArgumentsConfiguration() {
+po::options_description CommandLineModelChecking::initializeStatisticalModelCheckerArgumentsConfiguration() {
     po::options_description statisticalArguments(CONFIG_CAPTION_STATISTICAL_MODEL_CHECKER_ARGUMENTS);
 
     statisticalArguments.add_options()(ARG_TYPE_I_ERROR_NAME_LONG.c_str()     , po::value<double>(), (ARG_TYPE_I_ERROR_DESCRIPTION + "\n").c_str())
@@ -99,7 +99,7 @@ po::options_description CommandLineModelChecking::initialiseStatisticalModelChec
     return statisticalArguments;
 }
 
-po::options_description CommandLineModelChecking::initialiseApproximateProbabilisticModelCheckerArgumentsConfiguration() {
+po::options_description CommandLineModelChecking::initializeApproximateProbabilisticModelCheckerArgumentsConfiguration() {
     po::options_description approximateProbabilisticArguments(CONFIG_CAPTION_APPROXIMATE_PROBABILISTIC_MODEL_CHECKER_ARGUMENTS);
 
     approximateProbabilisticArguments.add_options()(ARG_DELTA_NAME_LONG.c_str()     , po::value<double>(), (ARG_DELTA_DESCRIPTION + "\n").c_str())
@@ -108,7 +108,7 @@ po::options_description CommandLineModelChecking::initialiseApproximateProbabili
     return approximateProbabilisticArguments;
 }
 
-po::options_description CommandLineModelChecking::initialiseBayesianModelCheckerArgumentsConfiguration() {
+po::options_description CommandLineModelChecking::initializeBayesianModelCheckerArgumentsConfiguration() {
     po::options_description bayesianArguments(CONFIG_CAPTION_BAYESIAN_MODEL_CHECKER_ARGUMENTS);
 
     bayesianArguments.add_options()(ARG_BAYESIAN_ALPHA_NAME_LONG.c_str()        , po::value<double>(), (ARG_BAYESIAN_ALPHA_DESCRIPTION + "\n").c_str())
@@ -118,7 +118,7 @@ po::options_description CommandLineModelChecking::initialiseBayesianModelChecker
     return bayesianArguments;
 }
 
-po::options_description CommandLineModelChecking::initialiseApproximateBayesianModelCheckerArgumentsConfiguration() {
+po::options_description CommandLineModelChecking::initializeApproximateBayesianModelCheckerArgumentsConfiguration() {
     po::options_description approximateBayesianArguments(CONFIG_CAPTION_APPROXIMATE_BAYESIAN_MODEL_CHECKER_ARGUMENTS);
 
     approximateBayesianArguments.add_options()(ARG_APPROXIMATE_BAYESIAN_ALPHA_NAME_LONG.c_str() , po::value<double>(), (ARG_BAYESIAN_ALPHA_DESCRIPTION + "\n").c_str())
@@ -243,8 +243,8 @@ void CommandLineModelChecking::removeOptionalArguments(po::variables_map &variab
         variablesMap.erase(ARG_EXTRA_EVALUATION_PROGRAM_NAME_LONG);
     }
 
-    if (variablesMap.count(ARG_TYPE_SEMANTICS_TABLE_NAME_LONG)) {
-        variablesMap.erase(ARG_TYPE_SEMANTICS_TABLE_NAME_LONG);
+    if (variablesMap.count(ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG)) {
+        variablesMap.erase(ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG);
     }
 
     if (variablesMap.count(ARG_VERBOSE_NAME_LONG)) {
@@ -368,26 +368,27 @@ void CommandLineModelChecking::removeApproximateBayesianModelCheckingArguments(p
     variablesMap.erase(ARG_VARIANCE_THRESHOLD_NAME_LONG);
 }
 
-void CommandLineModelChecking::initialiseClassMembers() {
-    initialiseRequiredArgumentsDependentClassMembers();
-    initialiseOptionalArgumentsDependentClassMembers();
-    initialiseModelCheckerTypeDependentClassMembers();
+void CommandLineModelChecking::initializeClassMembers() {
+    initializeRequiredArgumentsDependentClassMembers();
+    initializeOptionalArgumentsDependentClassMembers();
+    initializeModelCheckerTypeDependentClassMembers();
 }
 
-void CommandLineModelChecking::initialiseRequiredArgumentsDependentClassMembers() {
+void CommandLineModelChecking::initializeRequiredArgumentsDependentClassMembers() {
     logicQueriesFilepath  = variablesMap[ARG_LOGIC_QUERIES_NAME_LONG].as<std::string>();
     tracesFolderPath      = variablesMap[ARG_SPATIAL_TEMPORAL_TRACES_NAME_LONG].as<std::string>();
     extraEvaluationTime   = variablesMap[ARG_EXTRA_EVALUATION_TIME_NAME_LONG].as<unsigned long>();
     modelCheckerType      = variablesMap[ARG_MODEL_CHECKER_TYPE_NAME_LONG].as<unsigned int>();
 }
 
-void CommandLineModelChecking::initialiseOptionalArgumentsDependentClassMembers() {
+void CommandLineModelChecking::initializeOptionalArgumentsDependentClassMembers() {
     if (variablesMap.count(ARG_EXTRA_EVALUATION_PROGRAM_NAME_LONG)) {
         extraEvaluationProgramPath = variablesMap[ARG_EXTRA_EVALUATION_PROGRAM_NAME_LONG].as<std::string>();
     }
 
-    if (variablesMap.count(ARG_TYPE_SEMANTICS_TABLE_NAME_LONG)) {
-        typeSemanticsTableFilepath = variablesMap[ARG_TYPE_SEMANTICS_TABLE_NAME_LONG].as<std::string>();
+    if (variablesMap.count(ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG)) {
+        multiscaleArchitectureGraphFilepath
+            = variablesMap[ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG].as<std::string>();
     }
 
     if (variablesMap.count(ARG_VERBOSE_NAME_LONG)) {
@@ -395,31 +396,31 @@ void CommandLineModelChecking::initialiseOptionalArgumentsDependentClassMembers(
     }
 }
 
-void CommandLineModelChecking::initialiseModelCheckerTypeDependentClassMembers() {
-    initialiseModelChecker();
-    initialiseModelCheckingManager();
+void CommandLineModelChecking::initializeModelCheckerTypeDependentClassMembers() {
+    initializeModelChecker();
+    initializeModelCheckingManager();
 }
 
-void CommandLineModelChecking::initialiseModelChecker() {
+void CommandLineModelChecking::initializeModelChecker() {
     switch (modelCheckerType) {
         case MODEL_CHECKER_TYPE_PROBABILISTIC_BLACK_BOX:
-            initialiseProbabilisticBlackBoxModelChecker();
+            initializeProbabilisticBlackBoxModelChecker();
             break;
 
         case MODEL_CHECKER_TYPE_STATISTICAL:
-            initialiseStatisticalModelChecker();
+            initializeStatisticalModelChecker();
             break;
 
         case MODEL_CHECKER_TYPE_APPROXIMATE_PROBABILISTIC:
-            initialiseApproximateProbabilisticModelChecker();
+            initializeApproximateProbabilisticModelChecker();
             break;
 
         case MODEL_CHECKER_TYPE_BAYESIAN:
-            initialiseBayesianModelChecker();
+            initializeBayesianModelChecker();
             break;
 
         case MODEL_CHECKER_TYPE_APPROXIMATE_BAYESIAN:
-            initialiseApproximateBayesianModelChecker();
+            initializeApproximateBayesianModelChecker();
             break;
 
         default:
@@ -427,14 +428,14 @@ void CommandLineModelChecking::initialiseModelChecker() {
     }
 }
 
-void CommandLineModelChecking::initialiseProbabilisticBlackBoxModelChecker() {
+void CommandLineModelChecking::initializeProbabilisticBlackBoxModelChecker() {
     modelCheckerFactory = std::make_shared<ProbabilisticBlackBoxModelCheckerFactory>();
 
     modelCheckerTypeName    = MODEL_CHECKER_PROBABILISTIC_BLACK_BOX_NAME;
     modelCheckerParameters  = MODEL_CHECKER_PROBABILISTIC_BLACK_BOX_PARAMETERS;
 }
 
-void CommandLineModelChecking::initialiseStatisticalModelChecker() {
+void CommandLineModelChecking::initializeStatisticalModelChecker() {
     double typeIError   = variablesMap[ARG_TYPE_I_ERROR_NAME_LONG].as<double>();
     double typeIIError  = variablesMap[ARG_TYPE_II_ERROR_NAME_LONG].as<double>();
 
@@ -450,7 +451,7 @@ void CommandLineModelChecking::initialiseStatisticalModelChecker() {
     );
 }
 
-void CommandLineModelChecking::initialiseApproximateProbabilisticModelChecker() {
+void CommandLineModelChecking::initializeApproximateProbabilisticModelChecker() {
     double delta    = variablesMap[ARG_DELTA_NAME_LONG].as<double>();
     double epsilon  = variablesMap[ARG_EPSILON_NAME_LONG].as<double>();
 
@@ -466,7 +467,7 @@ void CommandLineModelChecking::initialiseApproximateProbabilisticModelChecker() 
     );
 }
 
-void CommandLineModelChecking::initialiseBayesianModelChecker() {
+void CommandLineModelChecking::initializeBayesianModelChecker() {
     double alpha                = variablesMap[ARG_BAYESIAN_ALPHA_NAME_LONG].as<double>();
     double beta                 = variablesMap[ARG_BAYESIAN_BETA_NAME_LONG].as<double>();
     double bayesFactorThreshold = variablesMap[ARG_BAYES_FACTOR_THRESHOLD_NAME_LONG].as<double>();
@@ -485,7 +486,7 @@ void CommandLineModelChecking::initialiseBayesianModelChecker() {
     );
 }
 
-void CommandLineModelChecking::initialiseApproximateBayesianModelChecker() {
+void CommandLineModelChecking::initializeApproximateBayesianModelChecker() {
     double alpha                = variablesMap[ARG_APPROXIMATE_BAYESIAN_ALPHA_NAME_LONG].as<double>();
     double beta                 = variablesMap[ARG_APPROXIMATE_BAYESIAN_BETA_NAME_LONG].as<double>();
     double varianceThreshold    = variablesMap[ARG_VARIANCE_THRESHOLD_NAME_LONG].as<double>();
@@ -506,10 +507,10 @@ void CommandLineModelChecking::initialiseApproximateBayesianModelChecker() {
     );
 }
 
-void CommandLineModelChecking::initialiseModelCheckingManager() {
+void CommandLineModelChecking::initializeModelCheckingManager() {
     modelCheckingManager = std::make_shared<ModelCheckingManager>(
                                logicQueriesFilepath, tracesFolderPath,
-                               extraEvaluationTime, typeSemanticsTableFilepath
+                               extraEvaluationTime, multiscaleArchitectureGraphFilepath
                            );
 
     modelCheckingManager->setExtraEvaluationProgramPath(extraEvaluationProgramPath);
@@ -552,9 +553,9 @@ const std::string   CommandLineModelChecking::ARG_EXTRA_EVALUATION_PROGRAM_NAME_
 const std::string   CommandLineModelChecking::ARG_EXTRA_EVALUATION_PROGRAM_NAME_BOTH                            = ARG_EXTRA_EVALUATION_PROGRAM_NAME_LONG + ",p";
 const std::string   CommandLineModelChecking::ARG_EXTRA_EVALUATION_PROGRAM_DESCRIPTION                          = "the program which will be executed whenever extra evaluation (and input traces) is required";
 
-const std::string   CommandLineModelChecking::ARG_TYPE_SEMANTICS_TABLE_NAME_LONG                                = "type-semantics-table";
-const std::string   CommandLineModelChecking::ARG_TYPE_SEMANTICS_TABLE_NAME_BOTH                                = ARG_TYPE_SEMANTICS_TABLE_NAME_LONG + ",s";
-const std::string   CommandLineModelChecking::ARG_TYPE_SEMANTICS_TABLE_DESCRIPTION                              = "the type semantics table mapping semantic criteria values (e.g. Organ.Heart) to abstract positive natural numbers";
+const std::string   CommandLineModelChecking::ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG                       = "multiscale-architecture-graph";
+const std::string   CommandLineModelChecking::ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_BOTH                       = ARG_MULTISCALE_ARCHITECTURE_GRAPH_NAME_LONG + ",a";
+const std::string   CommandLineModelChecking::ARG_MULTISCALE_ARCHITECTURE_GRAPH_DESCRIPTION                     = "the multiscale architecture graph encoding the hierarchical structure of the considered system";
 
 const std::string   CommandLineModelChecking::ARG_VERBOSE_NAME_LONG                                             = "verbose";
 const std::string   CommandLineModelChecking::ARG_VERBOSE_NAME_BOTH                                             = ARG_VERBOSE_NAME_LONG + ",v";

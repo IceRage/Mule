@@ -7,12 +7,8 @@
 /*{% endfor %}*/
  *****************************************************************************/
 
-#include "TraceEvaluationTest.hpp"
+#include "TimepointsSpatialEntitiesAttributesInitializer.hpp"
 
-/*{% for spatial_entity in spatial_entities %}*/
-#include "multiscale/verification/spatial-temporal/model//*{{ spatial_entity.name|first_to_upper }}*/.hpp"
-/*{% endfor %}*/
- 
 using namespace multiscale;
 using namespace multiscaletest;
 
@@ -20,87 +16,20 @@ using namespace multiscaletest;
 namespace multiscaletest {
 
     //! Class for testing evaluation of spatial entities-only traces
-    class SpatialEntitiesTraceTest : public TraceEvaluationTest {
+    class SpatialEntitiesTraceTest : public NonEmptyTraceEvaluationTest {
 
-        protected:
-            
-            double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue;  /*!< The minimum /*{{ spatial_measures[0].name }}*/ value for the /*{{ spatial_entities[0].name }}*/ spatial entity type */
-            double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue;  /*!< The maximum /*{{ spatial_measures[0].name }}*/ value for the /*{{ spatial_entities[0].name }}*/ spatial entity type */
-            
         private:
-
-           //! Initialise the trace
-           virtual void InitialiseTrace() override;
+    
+            //! Add values to timepoints
+            virtual void AddValuesToTimepoints() override;
 
     };
-
-    void SpatialEntitiesTraceTest::InitialiseTrace() {
-        // Initialise protected class fields
-        nrOfTimePoints = 12;
-        
-        /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue = 1;
-        
-        // Initialise timepoints
-        trace.clear();
-
-        std::vector<TimePoint> timePoints;
-
-        // Add timepoints to the trace
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            timePoints.push_back(TimePoint(i));
-        }
-
-        // Add spatial entities to each timepoint
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-
-            // Add /*{{ spatial_entities[0].name }}*/s to the timepoint
-            for (std::size_t j = ((((i + 1) % 4) == 0) ? (i - 1) : 0); j <= i; j++) {
-                std::shared_ptr<SpatialEntity> /*{{ spatial_entities[0].name }}*/ = std::make_shared</*{{ spatial_entities[0].name|first_to_upper }}*/>();
-
-                /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue = std::max(/*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue, static_cast<double>((j * 2.4) + /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue));
-                
-                /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, static_cast<double>((j * 2.4) + /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue));
-            /*{% for spatial_measure in spatial_measures[1:] %}*/
-                /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 2);
-            /*{% endfor %}*/
-                /*{{ spatial_entities[0].name }}*/->setSemanticType(SemanticType::DEFAULT_VALUE);
-
-                timePoints[i].addSpatialEntityAndType(/*{{ spatial_entities[0].name }}*/, SubsetSpecificType::/*{{ spatial_entities[0].name|first_to_upper }}*/s);
-            }
-            
-        /*{% for spatial_entity in spatial_entities[1:] %}*/
-            // Add /*{{ spatial_entity.name }}*/s with default semantic type to the timepoint
-            for (std::size_t k = 0; k <= i; k++) {
-                std::shared_ptr<SpatialEntity> /*{{ spatial_entity.name }}*/ = std::make_shared</*{{ spatial_entity.name|first_to_upper }}*/>();
-
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, static_cast<double>((k * 0.3) + 0.7));
-            /*{% for spatial_measure in spatial_measures[1:] %}*/
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 3);
-            /*{% endfor %}*/
-                /*{{ spatial_entity.name }}*/->setSemanticType(SemanticType::DEFAULT_VALUE);
-
-                timePoints[i].addSpatialEntityAndType(/*{{ spatial_entity.name }}*/, SubsetSpecificType::/*{{ spatial_entity.name|first_to_upper }}*/s);
-            }
-            
-            // Add /*{{ spatial_entity.name }}*/s with semantic type "Organ.Heart" to the timepoint
-            for (std::size_t k = 0; k <= i; k++) {
-                std::shared_ptr<SpatialEntity> /*{{ spatial_entity.name }}*/ = std::make_shared</*{{ spatial_entity.name|first_to_upper }}*/>();
-
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, static_cast<double>((k * 0.3) + 0.7));
-            /*{% for spatial_measure in spatial_measures[1:] %}*/
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 3);
-            /*{% endfor %}*/
-                /*{{ spatial_entity.name }}*/->setSemanticType(SEMANTIC_TYPE_ORGAN_HEART);
-
-                timePoints[i].addSpatialEntityAndType(/*{{ spatial_entity.name }}*/, SubsetSpecificType::/*{{ spatial_entity.name|first_to_upper }}*/s);
-            }
-        /*{% endfor %}*/
-        }
-
-        // Add all timepoints to the trace
-        for (TimePoint &timePoint : timePoints) {
-            trace.addTimePoint(timePoint);
-        }
+    
+    
+    void SpatialEntitiesTraceTest::AddValuesToTimepoints() {
+        TimepointsSpatialEntitiesAttributesInitializer spatialEntitiesAttributesInitializer;
+    
+        spatialEntitiesAttributesInitializer.addSpatialEntitiesAttributesToTimepoints(timePoints);
     }
 
 };
@@ -128,7 +57,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryNumericFilter) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, BinaryNumericMeasureAdd) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= add(" + StringManipulator::toString<double>(aMinValue) + ", 0.0111)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= add(1, 0.0111)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, BinaryNumericMeasureDiv) {
@@ -152,7 +81,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryNumericMeasurePower) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, BinaryNumericMeasureSubtract) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 1))) = 0]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/))) = 0]"));
 }
 
 
@@ -178,7 +107,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryNumericNumeric) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, BinaryNumericSpatial) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] (sum(div(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = 11)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] (sum(div(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = /*{{ nr_of_timepoints|int - 2 }}*/)]"));
 }
 
 
@@ -230,7 +159,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalNumeric) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileMeasurePercentile) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X[4] percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X[4] percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3) = /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileMeasureQuartile) {
@@ -247,7 +176,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileMeasureQuartile) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileNumeric) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3) > 0.9999]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3) > -0.0001]"));
 }
 
 
@@ -260,7 +189,7 @@ TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileNumeric) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalQuantileSpatial) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min([0, 10] percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3)) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min([0, 10] percentile(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), 4.3)) = /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 
@@ -286,11 +215,15 @@ TEST_F(SpatialEntitiesTraceTest, BinaryStatisticalSpatial) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, ChangeMeasureDifference) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [d(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) <= 2.41]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [d(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / (nr_of_timepoints|int - 1) }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, ChangeMeasureRatio) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) < 3.4]"));
+/*{% if spatial_measures[0].min_value|float == 0 %}*/
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) > 0]"));
+/*{% else %}*/
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) >= /*{{ spatial_measures[0].max_value|float / spatial_measures[0].min_value|float }}*/]"));
+/*{% endif %}*/
 }
 
 
@@ -303,7 +236,11 @@ TEST_F(SpatialEntitiesTraceTest, ChangeMeasureRatio) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, ChangeTemporalNumericCollection) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [max(r([0, 11] min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)))) = 25]"));
+/*{% if spatial_measures[0].min_value|float == 0 %}*/
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [max(r([0, 11] min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)))) <= 0]"));
+/*{% else %}*/
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [max(r([0, 11] min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)))) <= 2]"));
+/*{% endif %}*/
 }
 
 
@@ -316,7 +253,11 @@ TEST_F(SpatialEntitiesTraceTest, ChangeTemporalNumericCollection) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, ChangeTemporalNumericMeasure) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) < 3.41]"));
+/*{% if spatial_measures[0].min_value|float == 0 %}*/
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) > 0]"));
+/*{% else %}*/
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [r(max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) > /*{{ spatial_measures[0].max_value|float / spatial_measures[0].min_value|float }}*/]"));
+/*{% endif %}*/
 }
 
 
@@ -358,17 +299,17 @@ TEST_F(SpatialEntitiesTraceTest, ComparatorEqual) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, CompoundConstraint) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) ^ (/*{{ spatial_measures[0].name }}*/ = 0.1)))) <= 1]"));
-    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) V (/*{{ spatial_measures[0].name }}*/ = 0.3)))) = 0]"));
-    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) => (/*{{ spatial_measures[0].name }}*/ = 0.1)))) > 1]"));
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) <=> (/*{{ spatial_measures[0].name }}*/ = 0.1)))) < 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) ^ (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/)))) <= 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) V (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) * 3 }}*/)))) = 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) => (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/)))) > 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) <=> (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/)))) < 1]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, CompoundConstraintMultiple) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) ^ (/*{{ spatial_measures[0].name }}*/ = 0.1) ^ (~ /*{{ spatial_measures[0].name }}*/ > 1)))) < 1]"));
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) V (/*{{ spatial_measures[0].name }}*/ = 0.1) V (~ /*{{ spatial_measures[0].name }}*/ > 1)))) <= 1]"));
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) => (/*{{ spatial_measures[0].name }}*/ = 0.1) => (~ /*{{ spatial_measures[0].name }}*/ > 1)))) = 1]"));
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= 1.0001) <=> (/*{{ spatial_measures[0].name }}*/ = 0.1) <=> (~ /*{{ spatial_measures[0].name }}*/ > 1)))) = 0]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) ^ (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/) ^ (~ /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/)))) < 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) V (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/) V (~ /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/)))) <= 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) => (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/) => (~ /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/)))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110000) }}*/) <=> (/*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (110) }}*/) <=> (~ /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/)))) = 0]"));
 }
 
 
@@ -381,17 +322,17 @@ TEST_F(SpatialEntitiesTraceTest, CompoundConstraintMultiple) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, CompoundLogicProperty) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1)]"));
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) V (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1)]"));
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) => (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 1)]"));
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) <=> (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= 1)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) V (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1)]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) => (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 1)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) <=> (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= 1)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, CompoundLogicPropertyMultiple) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) ^ 3 = 3]"));
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) V (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) V 3 = 3]"));
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) => (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) => 3 = 3]"));
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1) <=> (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) <=> 3 = 3]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) ^ 3 = 3]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) V (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) V 3 = 3]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) => (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) => 3 = 3]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/) <=> (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1) <=> 3 = 3]"));
 }
 
 
@@ -404,15 +345,15 @@ TEST_F(SpatialEntitiesTraceTest, CompoundLogicPropertyMultiple) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintEnclosedByParentheses) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ < 1.00001)))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (1100000) }}*/)))) = 1]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintEnclosedByParenthesesDoubled) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ((/*{{ spatial_measures[0].name }}*/ < 1.00001))))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ((/*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (1100000) }}*/))))) = 1]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintEnclosedByParenthesesQuadrupled) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ((((/*{{ spatial_measures[0].name }}*/ < 1.00001))))))) >= 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ((((/*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (1100000) }}*/))))))) >= 1]"));
 }
 
 
@@ -425,7 +366,7 @@ TEST_F(SpatialEntitiesTraceTest, ConstraintEnclosedByParenthesesQuadrupled) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, Constraint) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 10000 V /*{{ spatial_measures[0].name }}*/ < 1.001))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].max_value }}*/ V /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (1100000) }}*/))) = 1]"));
 }
 
 
@@ -438,7 +379,7 @@ TEST_F(SpatialEntitiesTraceTest, Constraint) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, FilterNumericMeasure) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 0.5 ^ /*{{ spatial_measures[0].name }}*/ < 1.0001))) > 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float - 0.5 }}*/ ^ /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * (nr_of_timepoints|int - 1) / (1100000) }}*/))) > 0]"));
 }
 
 
@@ -451,7 +392,7 @@ TEST_F(SpatialEntitiesTraceTest, FilterNumericMeasure) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, FilterSubset) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 1))) = 0]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value }}*/))) = 0]"));
 }
 
 
@@ -490,7 +431,7 @@ TEST_F(SpatialEntitiesTraceTest, GlobalLogicProperty) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, HeterogeneousTimeseriesComponentPeak) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [max(enteringValue(peak, [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)))) > 16.59]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [max(enteringValue(peak, [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)))) > /*{{ (spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 13 / (2 * (nr_of_timepoints|int - 1))) - 0.0001 }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, HeterogeneousTimeseriesComponentValley) {
@@ -613,7 +554,7 @@ TEST_F(SpatialEntitiesTraceTest, MultipleLogicProperties2) {
             "               /*{{ spatial_measures[0].name }}*/("
             "                   filter("
             "                       /*{{ spatial_entities[0].name }}*/s, "
-            "                       /*{{ spatial_measures[0].name }}*/ <= 10"
+            "                       /*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 4 }}*/"
             "                   )"
             "               )"
             "           ) >= 2 "
@@ -643,7 +584,7 @@ TEST_F(SpatialEntitiesTraceTest, MultipleLogicProperties2) {
             "                   (/*{{ spatial_measures[0].name }}*/ >= 4)"
             "               ) "
             "           )"
-            "       ) >= 1"
+            "       ) >= 0"
             "   ) U [3, 7] ( "
             "       kurt("
             "           /*{{ spatial_measures[0].name }}*/("
@@ -672,7 +613,7 @@ TEST_F(SpatialEntitiesTraceTest, MultipleLogicProperties2) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, NextKLogicProperty) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X [3] (max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 8.1999)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X [3] (max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ (spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 3 / (nr_of_timepoints|int - 1)) - 0.00001 }}*/)]"));
 }
 
 
@@ -685,7 +626,7 @@ TEST_F(SpatialEntitiesTraceTest, NextKLogicProperty) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, NextLogicProperty) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X (max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= 3.5)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [X (max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= /*{{ (spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / (nr_of_timepoints|int - 1)) + 0.001 }}*/)]"));
 }
 
 
@@ -698,7 +639,7 @@ TEST_F(SpatialEntitiesTraceTest, NextLogicProperty) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, NotConstraint) {
-    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ~ (/*{{ spatial_measures[0].name }}*/ <= 1)))) = 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, ~ (/*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value }}*/)))) = 1]"));
 }
 
 
@@ -737,7 +678,7 @@ TEST_F(SpatialEntitiesTraceTest, NumericMeasure) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, NumericMeasureCollection) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 
@@ -750,7 +691,7 @@ TEST_F(SpatialEntitiesTraceTest, NumericMeasureCollection) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, NumericSpatialMeasure) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [geomean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 
@@ -766,28 +707,28 @@ TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWithoutTypes) {
     EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A} <= {B}]"));
 }
 
-TEST_F(SpatialEntitiesTraceTest, NumericStateVariableTypeLeft) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {B}]"));
+TEST_F(SpatialEntitiesTraceTest, NumericStateVariableScaleAndSubsystemLeft) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {B}]"));
 }
 
-TEST_F(SpatialEntitiesTraceTest, NumericStateVariableTypeRight) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A} <= {B}(type = Organ.Kidney)]"));
+TEST_F(SpatialEntitiesTraceTest, NumericStateVariableScaleAndSubsystemRight) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A} <= {B}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableBothTypes) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {B}(type = Organ.Kidney)]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {B}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableBothTypesAndDifferentTypeValues) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {C}(type = Organ.Heart)]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {C}(scaleAndSubsystem = Organ.Heart)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableOneNumericStateVariable) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{C}(type = Organ.Heart) = 12]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{C}(scaleAndSubsystem = Organ.Heart) = 12]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWrongRhsType) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {C}(type = Organ.Kidney)]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {C}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWrongName) {
@@ -799,19 +740,19 @@ TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWrongLongName) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWrongTypeLhs) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Heart) <= {B}]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Heart) <= {B}]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, NumericStateVariableWrongTypeLhsLargerValue) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{B}(type = 213121) <= {B}]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{B}(scaleAndSubsystem = 213.121) <= {B}]"));
 }
 
-TEST_F(SpatialEntitiesTraceTest, NumericStateVariableSemanticTypeNotInTypeSemanticsTable) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] (({D}(type = Organ.Liver) < 5.01) ^ ({D}(type = Organ.Liver) > 4.99))]"));
+TEST_F(SpatialEntitiesTraceTest, NumericStateVariableScaleAndSubsystemNotInMultiscaleArchitectureGraph) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] (({D}(scaleAndSubsystem = Organ.Liver) < 5.01) ^ ({D}(scaleAndSubsystem = Organ.Liver) > 4.99))]"));
 }
 
-TEST_F(SpatialEntitiesTraceTest, NumericStateVariableTypeInTypeSemanticsTable) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] (({B}(type = Organ.Kidney) < 3.01) ^ ({B}(type = Organ.Kidney) > 2.99))]"));
+TEST_F(SpatialEntitiesTraceTest, NumericStateVariableScaleAndSubsystemInMultiscaleArchitectureGraph) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] (({B}(scaleAndSubsystem = Organ.Kidney) < 3.01) ^ ({B}(scaleAndSubsystem = Organ.Kidney) > 2.99))]"));
 }
 
 
@@ -837,7 +778,7 @@ TEST_F(SpatialEntitiesTraceTest, NumericStatisticalMeasure) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, PrimarySpatialMeasureCollection) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 26.21]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ (spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 21 / (2 * (nr_of_timepoints|int - 1))) + 0.01 }}*/]"));
 }
 
 
@@ -857,13 +798,13 @@ TEST_F(SpatialEntitiesTraceTest, ProbabilisticLogicProperty) {
 /////////////////////////////////////////////////////////
 //
 //
-// SemanticType
+// ScaleAndSubsystem
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST_F(SpatialEntitiesTraceTest, SemanticType) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.4 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, type < Organ.Kidney))) >= 1]"));
+TEST_F(SpatialEntitiesTraceTest, ScaleAndSubsystem) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.4 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, scaleAndSubsystem = Organ.Kidney))) > 0]"));
 }
 
 
@@ -906,12 +847,12 @@ TEST_F(SpatialEntitiesTraceTest, SimilarityTemporalNumericCollection) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, SpatialMeasure/*{{ spatial_measures[0].name|first_to_upper }}*/) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 0))) >= 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ = /*{{ spatial_measures[0].min_value }}*/))) = 1]"));
 }
 
 /*{% for spatial_measure in spatial_measures[1:] %}*/
 TEST_F(SpatialEntitiesTraceTest, SpatialMeasure/*{{ spatial_measure.name|first_to_upper }}*/) {
-    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measure.name }}*/ > /*{{ spatial_measure.min_value }}*/))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measure.name }}*/ > /*{{ spatial_measure.min_value|float + (spatial_measure.max_value|float - spatial_measure.min_value|float) / 2 }}*/))) = 0]"));
 }
 
 /*{% endfor %}*/
@@ -925,7 +866,7 @@ TEST_F(SpatialEntitiesTraceTest, SpatialMeasure/*{{ spatial_measure.name|first_t
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, SpatialMeasureCollection) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 26.21]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ (spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / (nr_of_timepoints|int - 1)) - 0.0001 }}*/]"));
 }
 
 
@@ -951,7 +892,7 @@ TEST_F(SpatialEntitiesTraceTest, Subset) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, SubsetOperationDifference) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(difference(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ < 1)))) >= 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(difference(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value }}*/)))) >= 1]"));
 }
 
 /*{% for spatial_entity in spatial_entities[1:] %}*/
@@ -961,12 +902,12 @@ TEST_F(SpatialEntitiesTraceTest, SubsetOperationDifference/*{{ spatial_entity.na
 
 /*{% endfor %}*/
 TEST_F(SpatialEntitiesTraceTest, SubsetOperationIntersection) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(intersection(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= 1)))) >= 2]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(intersection(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value }}*/)))) >= 2]"));
 }
 
 /*{% for spatial_entity in spatial_entities[1:] %}*/
 TEST_F(SpatialEntitiesTraceTest, SubsetOperationIntersection/*{{ spatial_entity.name|first_to_upper }}*/) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(intersection(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entity.name }}*/s, /*{{ spatial_measures[0].name }}*/ > 0.5)))) > 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(intersection(/*{{ spatial_entities[0].name }}*/s, filter(/*{{ spatial_entity.name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float / 2 }}*/)))) > 0]"));
 }
 
 /*{% endfor %}*/
@@ -1023,7 +964,7 @@ TEST_F(SpatialEntitiesTraceTest, SubsetSubsetOperation) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, TemporalNumericCollection) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min([0, 11] max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min([0, 11] max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 
@@ -1036,7 +977,7 @@ TEST_F(SpatialEntitiesTraceTest, TemporalNumericCollection) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, TemporalNumericComparison) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1.0001]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value|float + 0.0001 }}*/]"));
 }
 
 
@@ -1118,7 +1059,7 @@ TEST_F(SpatialEntitiesTraceTest, TimeseriesTimeseriesComponent) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, UnaryNumericFilter) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= round(/*{{ spatial_measures[0].name }}*/)))) > 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= ceil(/*{{ spatial_measures[0].name }}*/)))) < 11]"));
 }
 
 
@@ -1181,7 +1122,7 @@ TEST_F(SpatialEntitiesTraceTest, UnaryNumericNumeric) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, UnaryNumericSpatial) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] (max(floor(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = 27)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] (max(floor(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = /*{{ spatial_measures[0].max_value|float|round(0, method='floor') }}*/)]"));
 }
 
 
@@ -1207,7 +1148,7 @@ TEST_F(SpatialEntitiesTraceTest, UnaryNumericTemporal) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, UnarySpatialConstraint) {
-    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= 0.4))) = 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P <= 0.9 [count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ <= /*{{ spatial_measures[0].min_value|float - 0.1 }}*/))) = 1]"));
 }
 
 
@@ -1220,7 +1161,7 @@ TEST_F(SpatialEntitiesTraceTest, UnarySpatialConstraint) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureAvg) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1.00001]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < /*{{ spatial_measures[0].min_value|float + 0.00001 }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureCount) {
@@ -1228,35 +1169,39 @@ TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureCount) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureGeomean) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [geomean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 1]"));
+/*{% if spatial_measures[0].min_value|float == 0 %}*/
+    EXPECT_THROW(RunEvaluationTest("P >= 0.3 [geomean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value }}*/]"), NumericException);
+/*{% else %}*/
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [geomean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value|float + 1 }}*/]"));
+/*{% endif %}*/
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureHarmean) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [harmean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 1.000001]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [harmean(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value|float + 0.00001 }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureKurt) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [kurt(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [kurt(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value|float + 0.1 }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureMax) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [max(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = /*{{ spatial_measures[0].min_value|float - 1 }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureMedian) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [median(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [median(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) >= /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureMin) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 1]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [min(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureMode) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [mode(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [mode(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureProduct) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [product(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [product(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) < /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureSkew) {
@@ -1264,11 +1209,11 @@ TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureSkew) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureStdev) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [stdev(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 1]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [stdev(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 0]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureSum) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [sum(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) = 0]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [sum(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value }}*/]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalMeasureVar) {
@@ -1305,13 +1250,13 @@ TEST_F(SpatialEntitiesTraceTest, UnaryStatisticalSpatial) {
 /////////////////////////////////////////////////////////
 //
 //
-// UnaryTypeConstraint
+// UnaryScaleAndSubsystemConstraint
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST_F(SpatialEntitiesTraceTest, UnaryTypeConstraint) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, type = Organ.Heart))) = 0]"));
+TEST_F(SpatialEntitiesTraceTest, UnaryScaleAndSubsystemConstraint) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, scaleAndSubsystem = Organ.Heart))) = 0]"));
 }
 
 
@@ -1361,7 +1306,7 @@ TEST_F(SpatialEntitiesTraceTest, GlobalConstantValueUnaryStatisticalNumeric) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, GlobalConstantValueBinaryStatisticalNumeric) {
-    EXPECT_TRUE(RunEvaluationTest("P < 0.9 [G [0, 10] (d(covar(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ < 1)), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = 0)]"));
+    EXPECT_TRUE(RunEvaluationTest("P < 0.9 [G [0, 10] (d(covar(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value }}*/)), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) = 0)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, GlobalConstantValueBinaryStatisticalQuantileNumeric) {
@@ -1476,7 +1421,7 @@ TEST_F(SpatialEntitiesTraceTest, IncreasingUntilDecreasingValueUnaryStatisticalN
 }
 
 TEST_F(SpatialEntitiesTraceTest, IncreasingUntilDecreasingValueBinaryStatisticalNumeric) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(d(covar(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) >= 0) U [0, 10] (d(avg(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 5 V /*{{ spatial_measures[0].name }}*/ < 10000)))) < 0)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(d(covar(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s), /*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s))) >= 0) U [0, 10] (d(avg(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float - 1 }}*/ V /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].max_value|float + 1 }}*/)))) < 0)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, IncreasingUntilDecreasingValueBinaryStatisticalQuantileNumeric) {
@@ -1497,7 +1442,7 @@ TEST_F(SpatialEntitiesTraceTest, DecreasingUntilIncreasingValueReal) {
 }
 
 TEST_F(SpatialEntitiesTraceTest, DecreasingUntilIncreasingValueNumericStateVariable) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(d({C}(type = Organ.Heart)) < 0) U [0, 10] (d({C}(type = Organ.Heart)) > 0)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(d({C}(scaleAndSubsystem = Organ.Heart)) < 0) U [0, 10] (d({C}(scaleAndSubsystem = Organ.Heart)) > 0)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, DecreasingUntilIncreasingValueUnaryNumeric) {
@@ -1567,11 +1512,11 @@ TEST_F(SpatialEntitiesTraceTest, OscillationsValueBinaryStatisticalQuantileNumer
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, EnclosingWithParenthesesDifferently1) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [((avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 10)) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 100)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [((avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 2 }}*/)) ^ (count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 100)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, EnclosingWithParenthesesDifferently2) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 10) ^ ((count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 100))]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [(avg(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 2 }}*/) ^ ((count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) > 100))]"));
 }
 
 
@@ -1601,15 +1546,15 @@ TEST_F(SpatialEntitiesTraceTest, TimeIntervalExceedsTraceStartTime) {
 /////////////////////////////////////////////////////////
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintsCombinationUnary) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 5))) > 10)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 4 }}*/))) > 10)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintsCombinationBinary) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > 5 ^ /*{{ spatial_measures[0].name }}*/ > 1000))) > 10)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 4 }}*/ ^ /*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 50 }}*/))) > 10)]"));
 }
 
 TEST_F(SpatialEntitiesTraceTest, ConstraintsCombinationNary) {
-    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ > 5) ^ ((/*{{ spatial_measures[0].name }}*/ > 1000) V (/*{{ spatial_measures[0].name }}*/ > 100 V /*{{ spatial_measures[0].name }}*/ < 210))))) > 10)]"));
+    EXPECT_FALSE(RunEvaluationTest("P < 0.9 [G [0, 5] (count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, (/*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) / 4 }}*/) ^ ((/*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 50 }}*/) V (/*{{ spatial_measures[0].name }}*/ > /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 5 }}*/ V /*{{ spatial_measures[0].name }}*/ < /*{{ spatial_measures[0].min_value|float + (spatial_measures[0].max_value|float - spatial_measures[0].min_value|float) * 10 }}*/))))) > 10)]"));
 }
 
 

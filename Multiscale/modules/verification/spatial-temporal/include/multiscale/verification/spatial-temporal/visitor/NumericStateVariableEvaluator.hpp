@@ -3,7 +3,7 @@
 
 #include "multiscale/exception/MultiscaleException.hpp"
 #include "multiscale/verification/spatial-temporal/attribute/NumericStateVariableAttribute.hpp"
-#include "multiscale/verification/spatial-temporal/visitor/SemanticTypeEvaluator.hpp"
+#include "multiscale/verification/spatial-temporal/visitor/ScaleAndSubsystemEvaluator.hpp"
 
 
 namespace multiscale {
@@ -17,26 +17,29 @@ namespace multiscale {
 
                 //! Evaluate the provided numeric state variable for the given timepoint
                 /*!
-                 * \param numericStateVariable  The provided numeric state variable
-                 * \param timePoint             The given timepoint
-                 * \param typeSemanticsTable    The given type semantics table
+                 * \param numericStateVariable          The provided numeric state variable
+                 * \param timePoint                     The given timepoint
+                 * \param multiscaleArchitectureGraph   The given multiscale architecture graph
                  */
                 static double evaluate(const NumericStateVariableAttribute &numericStateVariable,
                                        const TimePoint &timePoint,
-                                       const TypeSemanticsTable &typeSemanticsTable) {
-                    // Obtain the semantic type
-                    std::string semanticType = numericStateVariable.semanticType.get_value_or(
-                                                   SemanticTypeAttribute()
-                                               ).semanticType;
+                                       const MultiscaleArchitectureGraph &multiscaleArchitectureGraph) {
+                    // Obtain the scale and subsystem
+                    std::string scaleAndSubsystem = numericStateVariable.scaleAndSubsystem.get_value_or(
+                                                        ScaleAndSubsystemAttribute()
+                                                    ).scaleAndSubsystem;
 
-                    // Validate the semantic type
-                    SemanticTypeEvaluator::validate(semanticType, typeSemanticsTable);
+                    // Validate the scale and subsystem
+                    ScaleAndSubsystemEvaluator::validateScaleAndSubsystem(
+                        scaleAndSubsystem,
+                        multiscaleArchitectureGraph
+                    );
 
                     // Return the value of the numeric state variable
                     return (
                         evaluate(
                             numericStateVariable.stateVariable.name,
-                            semanticType,
+                            scaleAndSubsystem,
                             timePoint
                         )
                     );
@@ -46,15 +49,15 @@ namespace multiscale {
 
                 //! Evaluate the provided numeric state variable
                 /*!
-                 * \param name          The name of the numeric state variable
-                 * \param semanticType  The semantic type of the numeric state variable
-                 * \param timePoint     The given timepoint
+                 * \param name              The name of the numeric state variable
+                 * \param scaleAndSubsystem The scale and subsystem associated with the numeric state variable
+                 * \param timePoint         The given timepoint
                  */
-                static double evaluate(const std::string &name, const std::string &semanticType,
+                static double evaluate(const std::string &name, const std::string &scaleAndSubsystem,
                                        const TimePoint &timePoint) {
-                    // Construct the numeric state variable identity considering its name and semantic type
+                    // Construct the numeric state variable identity considering its name, and scale and subsystem
                     NumericStateVariableId numericStateVariableId(
-                        name, semanticType
+                        name, scaleAndSubsystem
                     );
 
                     // Return the value of the numeric state variable

@@ -2,7 +2,7 @@
 #define NUMERICSTATEVARIABLEGRAMMAR_HPP
 
 #include "multiscale/verification/spatial-temporal/attribute/NumericStateVariableAttribute.hpp"
-#include "multiscale/verification/spatial-temporal/parsing/SemanticTypeStringGrammar.hpp"
+#include "multiscale/verification/spatial-temporal/parsing/ScaleAndSubsystemStringGrammar.hpp"
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -27,8 +27,8 @@ namespace multiscale {
 
                 // Grammars
 
-                SemanticTypeStringGrammar<Iterator>
-                    semanticTypeRule;                           /*!< The grammar for parsing semantic types */
+                ScaleAndSubsystemStringGrammar<Iterator>
+                    scaleAndSubsystemRule;                      /*!< The grammar for parsing scales and subsystems */
 
                 // Rules
 
@@ -39,8 +39,8 @@ namespace multiscale {
                 qi::rule<Iterator, std::string(), qi::space_type>
                     stateVariableNameRule;                      /*!< The rule for parsing the name of a
                                                                      state variable without escaping white space */
-                qi::rule<Iterator, SemanticTypeAttribute(), qi::space_type>
-                    stateVariableTypeRule;                      /*!< The rule for parsing a state variable type */
+                qi::rule<Iterator, ScaleAndSubsystemAttribute(), qi::space_type>
+                    stateVariableScaleAndSubsystemRule;                      /*!< The rule for parsing a state variable type */
 
             public:
 
@@ -49,22 +49,22 @@ namespace multiscale {
             private:
 
                 //! Initialisation function
-                void initialise();
+                void initialize();
 
-                //! Initialise the grammar
-                void initialiseGrammar();
+                //! Initialize the grammar
+                void initializeGrammar();
 
-                //! Initialise debug support
-                void initialiseDebugSupport();
+                //! Initialize debug support
+                void initializeDebugSupport();
 
                 //! Assign names to the rules
                 void assignNamesToRules();
 
-                //! Initialise the debugging of rules
-                void initialiseRulesDebugging();
+                //! Initialize the debugging of rules
+                void initializeRulesDebugging();
 
-                //! Initialise the error handling routines
-                void initialiseErrorHandlingSupport();
+                //! Initialize the error handling routines
+                void initializeErrorHandlingSupport();
 
         };
 

@@ -5,14 +5,15 @@ using namespace multiscale::verification;
 
 
 AbstractSyntaxTree::AbstractSyntaxTree() {
-    isInitialised = false;
+    isInitialized = false;
 }
 
 AbstractSyntaxTree::~AbstractSyntaxTree() {}
 
-void AbstractSyntaxTree::initialiseTree(const ProbabilisticLogicPropertyAttribute &probabilisticLogicPropertyAttribute) {
+void AbstractSyntaxTree::initializeTree(const ProbabilisticLogicPropertyAttribute
+                                            &probabilisticLogicPropertyAttribute) {
     this->probabilisticLogicProperty = probabilisticLogicPropertyAttribute;
-    this->isInitialised              = true;
+    this->isInitialized              = true;
 }
 
 ComparatorType AbstractSyntaxTree::getComparator() {
@@ -24,14 +25,19 @@ double AbstractSyntaxTree::getProbability() {
 }
 
 bool AbstractSyntaxTree::evaluate(const SpatialTemporalTrace &spatialTemporalTrace,
-                                  const TypeSemanticsTable &typeSemanticsTable) {
-    if (!isInitialised) {
-        MS_throw(UnexpectedBehaviourException, ERR_ABSTRACT_SYNTAX_TREE_NOT_INITIALISED);
+                                  const MultiscaleArchitectureGraph &multiscaleArchitectureGraph) {
+    if (!isInitialized) {
+        MS_throw(UnexpectedBehaviourException, ERR_ABSTRACT_SYNTAX_TREE_NOT_InitializeD);
     }
 
-    return probabilisticLogicProperty.evaluate(spatialTemporalTrace, typeSemanticsTable);
+    return (
+        probabilisticLogicProperty.evaluate(
+            spatialTemporalTrace,
+            multiscaleArchitectureGraph
+        )
+    );
 }
 
 
 // Constants
-const std::string AbstractSyntaxTree::ERR_ABSTRACT_SYNTAX_TREE_NOT_INITIALISED = "The abstract syntax tree was not initialised before evaluation. Call the method initialiseTree(...) before calling the method evaluate(...).";
+const std::string AbstractSyntaxTree::ERR_ABSTRACT_SYNTAX_TREE_NOT_InitializeD = "The abstract syntax tree was not initialized before evaluation. Call the method initializeTree(...) before calling the method evaluate(...).";

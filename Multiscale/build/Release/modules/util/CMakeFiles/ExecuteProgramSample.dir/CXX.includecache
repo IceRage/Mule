@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../../include/multiscale/core/Multiscale.hpp
+string
+-
+
+../../modules/util/include/multiscale/util/OperatingSystem.hpp
+multiscale/core/Multiscale.hpp
+../../modules/util/include/multiscale/util/multiscale/core/Multiscale.hpp
+cstdlib
+-
+string
+-
+signal.h
+-
+sys/types.h
+-
+sys/wait.h
+-
+unistd.h
+-
+windows.h
+-
+stdio.h
+-
+tchar.h
+-
+
+/home/ovidiu/Temp/Mule/Multiscale/modules/util/sample/ExecuteProgramSample.cpp
+multiscale/util/OperatingSystem.hpp
+/home/ovidiu/Temp/Mule/Multiscale/modules/util/sample/multiscale/util/OperatingSystem.hpp
+iostream
+-
+

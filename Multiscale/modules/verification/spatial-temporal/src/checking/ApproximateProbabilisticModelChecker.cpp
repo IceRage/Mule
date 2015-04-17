@@ -8,20 +8,21 @@ using namespace multiscale::verification;
 
 
 ApproximateProbabilisticModelChecker::ApproximateProbabilisticModelChecker(const AbstractSyntaxTree
-                                                                           &abstractSyntaxTree,
-                                                                           const TypeSemanticsTable
-                                                                           &typeSemanticsTable,
-                                                                           double delta, double epsilon)
+                                                                               &abstractSyntaxTree,
+                                                                           const MultiscaleArchitectureGraph
+                                                                               &multiscaleArchitectureGraph,
+                                                                           double delta,
+                                                                           double epsilon)
                                                                            : ModelChecker(
                                                                                  abstractSyntaxTree,
-                                                                                 typeSemanticsTable
+                                                                                 multiscaleArchitectureGraph
                                                                              ) {
     validateInput(delta, epsilon);
 
     this->delta     = delta;
     this->epsilon   = epsilon;
 
-    initialise();
+    initialize();
 }
 
 ApproximateProbabilisticModelChecker::~ApproximateProbabilisticModelChecker() {}
@@ -77,13 +78,13 @@ bool ApproximateProbabilisticModelChecker::isBetweenZeroAndOne(double value) {
     return ((0 < value) && (value < 1));
 }
 
-void ApproximateProbabilisticModelChecker::initialise() {
+void ApproximateProbabilisticModelChecker::initialize() {
     probability = abstractSyntaxTree.getProbability();
 
-    initialiseNumberOfRequiredTraces();
+    initializeNumberOfRequiredTraces();
 }
 
-void ApproximateProbabilisticModelChecker::initialiseNumberOfRequiredTraces() {
+void ApproximateProbabilisticModelChecker::initializeNumberOfRequiredTraces() {
     double firstTerm    = (4 / (epsilon * epsilon));
     double secondTerm   = std::log(2 / delta);
 

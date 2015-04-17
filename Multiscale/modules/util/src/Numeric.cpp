@@ -392,7 +392,7 @@ double Numeric::median(const std::vector<double> &numbers, unsigned int nrOfValu
     std::sort(values.begin(), values.end());
 
     return (nrOfValues == 0) ? 0
-                             : (values[nrOfValues / 2]);
+                             : (values[std::floor(nrOfValues / 2.0)]);
 }
 
 double Numeric::minimum(const std::vector<double> &numbers, unsigned int nrOfValues) {
@@ -419,10 +419,11 @@ double Numeric::mode(const std::vector<double> &numbers, unsigned int nrOfValues
 }
 
 double Numeric::computeMode(const std::vector<double> &values, unsigned int nrOfValues) {
-    unsigned int index = 0;
-    double modeValue = std::numeric_limits<double>::min();
-    double countValue = 0;
-    int maxCount = 0;
+    double modeValue = 0;
+
+    unsigned int index      = 0;
+    unsigned int countValue = 0;
+    unsigned int maxCount   = 0;
 
     while (index < nrOfValues) {
         countValue = 1;

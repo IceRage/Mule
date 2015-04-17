@@ -6,7 +6,7 @@
 #include "multiscale/verification/spatial-temporal/data/LogicPropertyDataReader.hpp"
 #include "multiscale/verification/spatial-temporal/data/SpatialTemporalDataReader.hpp"
 #include "multiscale/verification/spatial-temporal/model/AbstractSyntaxTree.hpp"
-#include "multiscale/verification/spatial-temporal/model/TypeSemanticsTable.hpp"
+#include "multiscale/verification/spatial-temporal/model/MultiscaleArchitectureGraph.hpp"
 #include "multiscale/verification/spatial-temporal/parsing/Parser.hpp"
 
 #include <chrono>
@@ -43,8 +43,8 @@ namespace multiscale {
                 SpatialTemporalDataReader
                     traceReader;                    /*!< The behaviour/trace reader */
 
-                TypeSemanticsTable
-                    typeSemanticsTable;             /*!< The type semantics table */
+                MultiscaleArchitectureGraph
+                    multiscaleArchitectureGraph;    /*!< The multiscale architecture graph */
 
                 std::vector<std::vector<bool>>
                     evaluationResults;              /*!< The two-dimensional array storing the evaluation result
@@ -76,7 +76,7 @@ namespace multiscale {
                 ModelCheckingManager(const std::string &logicPropertiesFilepath,
                                      const std::string &tracesFolderPath,
                                      unsigned long extraEvaluationTime,
-                                     const std::string &typeSemanticsTableFilepath);
+                                     const std::string &multiscaleArchitectureGraphFilepath);
                 ~ModelCheckingManager();
 
                 //! Set the path of the program which should be executed whenever extra evaluation is required
@@ -101,37 +101,38 @@ namespace multiscale {
 
             private:
 
-                //! Initialise the model checking manager
-                /*! Initialise the model checking manager considering the given logic properties input file and
+                //! Initialize the model checking manager
+                /*! Initialize the model checking manager considering the given logic properties input file and
                  *  extra evaluation time, and print the introduction message
                  *
-                 * \param logicPropertiesFilepath       The path to the logic properties input file
-                 * \param extraEvaluationTime           The number of extra minutes allocated for evaluating
-                 *                                      logic properties
-                 * \param typeSemanticsTableFilepath    The path to the type semantics table
+                 * \param logicPropertiesFilepath               The path to the logic properties input file
+                 * \param extraEvaluationTime                   The number of extra minutes allocated for evaluating
+                 *                                              logic properties
+                 * \param multiscaleArchitectureGraphFilepath   The path to the multiscale architecture graph
                  */
-                void initialise(const std::string &logicPropertiesFilepath,
+                void initialize(const std::string &logicPropertiesFilepath,
                                 unsigned long extraEvaluationTime,
-                                const std::string &typeSemanticsTableFilepath);
+                                const std::string &multiscaleArchitectureGraphFilepath);
 
-                //! Initialise the extra evaluation time counters
+                //! Initialize the extra evaluation time counters
                 /*!
                  * \param extraEvaluationTime   The number of extra minutes allocated for evaluating
                  *                              logic properties
                  */
-                void initialiseExtraEvaluationTimeCounters(unsigned long extraEvaluationTime);
+                void initializeExtraEvaluationTimeCounters(unsigned long extraEvaluationTime);
 
-                //! Initialise the type semantics table
+                //! Initialize the multiscale architecture graph
                 /*!
-                 * \param typeSemanticsTableFilepath    The path to the type semantics table input file
+                 * \param multiscaleArchitectureGraphFilepath   The path to the multiscale architecture graph
+                 *                                              input file
                  */
-                void initialiseTypeSemanticsTable(const std::string &typeSemanticsTableFilepath);
+                void initializeMultiscaleArchitectureGraph(const std::string &multiscaleArchitectureGraphFilepath);
 
-                //! Initialise the logic properties using the provided input file
+                //! Initialize the logic properties using the provided input file
                 /*!
                  * \param logicPropertiesFilepath The path to the logic properties input file
                  */
-                void initialiseLogicProperties(const std::string &logicPropertiesFilepath);
+                void initializeLogicProperties(const std::string &logicPropertiesFilepath);
 
                 //! Run the model checking tasks and output the results
                 /*!

@@ -1601,84 +1601,84 @@ TEST(NumericStateVariable, IncorrectRoundBrackets) {
     EXPECT_THROW(parseInputString("P >= 0.3 [(A) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingLeftParanthesisForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}type = Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, MissingLeftParanthesisForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}scaleAndSubsystem = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingRightParanthesisForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = Organ.Heart <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, MissingRightParanthesisForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Heart <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingBothParanthesesForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}type = Organ.Heart <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, MissingBothParanthesesForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}scaleAndSubsystem = Organ.Heart <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingTypeKeywordForTypeConstraint) {
+TEST(NumericStateVariable, MissingScaleAndSubsystemKeywordForScaleAndSubsystemConstraint) {
     EXPECT_THROW(parseInputString("P >= 0.3 [{A}( = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingEqualComparatorForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, MissingEqualComparatorForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingTypeValueForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = ) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, MissingScaleAndSubsystemValueForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = ) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingTypeKeywordAndEqualComparatorForTypeConstraint) {
+TEST(NumericStateVariable, MissingScaleAndSubsystemKeywordAndEqualComparatorForScaleAndSubsystemConstraint) {
     EXPECT_THROW(parseInputString("P >= 0.3 [{A}(Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, MissingAllForTypeConstraint) {
+TEST(NumericStateVariable, MissingAllForScaleAndSubsystemConstraint) {
     EXPECT_THROW(parseInputString("P >= 0.3 [{A}() <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectLeftParanthesisForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}[type = Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectLeftParanthesisForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}[scaleAndSubsystem = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectRightParanthesisForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = Organ.Heart] <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectRightParanthesisForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Heart] <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectParanthesesForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}{type = Organ.Heart} <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectParanthesesForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}{scaleAndSubsystem = Organ.Heart} <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeSpecifierForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(typee = Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemSpecifierForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystemm = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeSpecifierForTypeConstraint2) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(ttype = Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemSpecifierForScaleAndSubsystemConstraint2) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(tscaleAndSubsystem = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectComparatorForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type > Organ.Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectComparatorForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem > Organ.Heart) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeInvalidCharacterForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = *) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemInvalidCharacterForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = *) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeMissingValueBeforeDotForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = .Organ) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemMissingValueBeforeDotForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = .Organ) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeMissingValueAfterDotForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = Organ.) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemMissingValueAfterDotForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = Organ.) <= 3]"), InvalidInputException);
 }
 
-TEST(NumericStateVariable, IncorrectTypeMissingValueBetweenDotsForTypeConstraint) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(type = Organ..Heart) <= 3]"), InvalidInputException);
+TEST(NumericStateVariable, IncorrectScaleAndSubsystemMissingValueBetweenDotsForScaleAndSubsystemConstraint) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = Organ..Heart) <= 3]"), InvalidInputException);
 }
 
 TEST(NumericStateVariable, MissingNumericStateVariableName) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{}(type = Organ.Heart) <= 3]"), InvalidInputException);
+    EXPECT_THROW(parseInputString("P >= 0.3 [{}(scaleAndSubsystem = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
 TEST(NumericStateVariable, MissingNumericStateVariableNameAndBraces) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [(type = Organ.Heart) <= 3]"), InvalidInputException);
+    EXPECT_THROW(parseInputString("P >= 0.3 [(scaleAndSubsystem = Organ.Heart) <= 3]"), InvalidInputException);
 }
 
 TEST(NumericStateVariable, CorrectNumericStateVariableSimple1) {
@@ -1693,16 +1693,16 @@ TEST(NumericStateVariable, CorrectNumericStateVariableSimple3) {
     EXPECT_TRUE(parseInputString("P >= 0.3 [{`1234567890-=~!@#$%^&*()_+qwertyuiop[]asdfghjkl;'\\<zxcvbnm,./QWERTYUIOPASDFGHJKL:\"|>ZXCVBNM<>?} <= 3]"));
 }
 
-TEST(NumericStateVariable, CorrectNumericStateVariableWithTypeConstraint4) {
-    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}(type = Organ.Heart) <= 3]"));
+TEST(NumericStateVariable, CorrectNumericStateVariableWithScaleAndSubsystemConstraint4) {
+    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Heart) <= 3]"));
 }
 
-TEST(NumericStateVariable, CorrectNumericStateVariableWithTypeConstraint5) {
-    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}  (type = Organ.Heart) <= 3]"));
+TEST(NumericStateVariable, CorrectNumericStateVariableWithScaleAndSubsystemConstraint5) {
+    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}  (scaleAndSubsystem = Organ.Heart) <= 3]"));
 }
 
-TEST(NumericStateVariable, CorrectNumericStateVariableWithTypeConstraint6) {
-    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}(type   =   Organ.Heart) <= 3]"));
+TEST(NumericStateVariable, CorrectNumericStateVariableWithScaleAndSubsystemConstraint6) {
+    EXPECT_TRUE(parseInputString("P >= 0.3 [{A}(scaleAndSubsystem   =   Organ.Heart) <= 3]"));
 }
 
 
@@ -1872,45 +1872,45 @@ TEST(ProbabilisticLogicProperty, ProbabilityHigh) {
 /////////////////////////////////////////////////////////
 //
 //
-// SemanticType
+// ScaleAndSubsystem
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST(SemanticType, IncorrectSemanticTypeInvalidCharacter) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > !) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemInvalidCharacter) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = !) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeMissingValuesAfterAndBeforeDot) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > .) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemMissingValuesAfterAndBeforeDot) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = .) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeMissingValueBeforeDot) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > .Heart) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemMissingValueBeforeDot) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = .Heart) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeMissingValueAfterDot) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > Heart.) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemMissingValueAfterDot) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = Heart.) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeMissingValueBetweenDots) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > Cell..AT42) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemCommaInsteadOfDot) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = Organ,Heart) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeManyDots) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > ....) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemManyDots) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = Organ..Heart) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeInvalidValuesBeforeAndAfterDots) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > Organ.*.%) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemInvalidValuesBeforeAndAfterDots) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = $.*) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, IncorrectSemanticTypeInvalidValuesBeforeAndAfterDots2) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (type > $.Organ.*.%) >= 2]"), InvalidInputException);
+TEST(ScaleAndSubsystem, IncorrectScaleAndSubsystemSpaceBeforeAndAfterDot) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = Organ . Kidney) >= 2]"), InvalidInputException);
 }
 
-TEST(SemanticType, Correct) {
-    EXPECT_TRUE(parseInputString("P >= 0.3 [{A} (type = Organ.Heart) >= 2]"));
+TEST(ScaleAndSubsystem, Correct) {
+    EXPECT_TRUE(parseInputString("P >= 0.3 [{A} (scaleAndSubsystem = Organ.Heart) >= 2]"));
 }
 
 
@@ -2929,37 +2929,37 @@ TEST(UnaryStatisticalSpatial, Correct) {
 /////////////////////////////////////////////////////////
 //
 //
-// UnaryTypeConstraint
+// UnaryScaleAndSubsystemConstraint
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST(UnaryTypeConstraint, IncorrectInputWrongTypeKeywordExtraLetterAfter) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, typee = Organ.Heart))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputWrongScaleAndSubsystemKeywordExtraLetterAfter) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, scaleAndSubsystemm = Organ.Heart))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, IncorrectInputWrongTypeKeywordExtraLetterBefore) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, ttype = Organ.Heart))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputWrongScaleAndSubsystemKeywordExtraLetterBefore) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, tscaleAndSubsystem = Organ.Heart))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, IncorrectInputBeforeTypeKeyword) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, 0 ^ type = Organ.Heart))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputBeforeScaleAndSubsystemKeyword) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, 0 ^ scaleAndSubsystem = Organ.Heart))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, IncorrectInputAfterTypeKeyword) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, type += Organ.Heart))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputAfterScaleAndSubsystemKeyword) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, scaleAndSubsystem += Organ.Heart))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, IncorrectInputAfterComparator) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, type = *))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputAfterComparator) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, scaleAndSubsystem = *))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, IncorrectInputAfterFilterNumericMeasure) {
-    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, type >= Organ.Heart - 0.3))) <= 3]"), InvalidInputException);
+TEST(UnaryScaleAndSubsystemConstraint, IncorrectInputAfterFilterNumericMeasure) {
+    EXPECT_THROW(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, scaleAndSubsystem >= Organ.Heart - 0.3))) <= 3]"), InvalidInputException);
 }
 
-TEST(UnaryTypeConstraint, Correct) {
-    EXPECT_TRUE(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, type = Organ.Heart))) <= 3]"));
+TEST(UnaryScaleAndSubsystemConstraint, Correct) {
+    EXPECT_TRUE(parseInputString("P >= 0.3 [count(clusteredness(filter(clusters, scaleAndSubsystem = Organ.Heart))) <= 3]"));
 }
 
 

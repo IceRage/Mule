@@ -19,7 +19,7 @@
 
     <!-- Elements -->
     
-    <xs:element name="experiment" type="ExperimentType" />
+    <xs:element name="experiment" type="ExperimentType"/>
     
     <!-- User-defined complex types -->
     
@@ -29,17 +29,17 @@
                 <!-- Uniqueness constraints -->
                 
                 <xs:unique name="UniqueNumericStateVariables">
-                    <xs:selector xpath="numericStateVariable" />
-                    <xs:field xpath="@semanticType" />            
-                    <xs:field xpath="name" />
+                    <xs:selector xpath="numericStateVariable"/>
+                    <xs:field xpath="@scaleAndSubsystem"/>            
+                    <xs:field xpath="name"/>
                 </xs:unique>
                 
                 <xs:unique name="UniqueSpatialEntities">
-                    <xs:selector xpath="spatialEntity" />
-                    <xs:field xpath="@spatialType" />
-                    <xs:field xpath="@semanticType" />
+                    <xs:selector xpath="spatialEntity"/>
+                    <xs:field xpath="@spatialType"/>
+                    <xs:field xpath="@scaleAndSubsystem"/>
                     /*{% for spatial_measure in spatial_measures %}*/
-                    <xs:field xpath="/*{{ spatial_measure.name }}*/" />
+                    <xs:field xpath="/*{{ spatial_measure.name }}*/"/>
                     /*{% endfor %}*/
                 </xs:unique> 
             </xs:element>
@@ -48,46 +48,46 @@
 
     <xs:complexType name="TimepointType">
         <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" name="spatialEntity" type="SpatialEntityType" />
-            <xs:element minOccurs="0" maxOccurs="unbounded" name="numericStateVariable" type="NumericStateVariableType" />
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="spatialEntity" type="SpatialEntityType"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="numericStateVariable" type="NumericStateVariableType"/>
         </xs:sequence>
         
-        <xs:attribute name="value" type="xs:nonNegativeInteger" />
+        <xs:attribute name="value" type="xs:nonNegativeInteger"/>
     </xs:complexType>
 
     <xs:complexType name="SpatialEntityType">
-        <xs:sequence>
+        <xs:all>
         /*{% for spatial_measure in spatial_measures %}*/
-            <xs:element name="/*{{ spatial_measure.name }}*/" type="/*{{ spatial_measure.name|first_to_upper }}*/Type" />
+            <xs:element name="/*{{ spatial_measure.name }}*/" type="/*{{ spatial_measure.name|first_to_upper }}*/Type"/>
         /*{% endfor %}*/
-        </xs:sequence>
+        </xs:all>
         
-        <xs:attribute name="spatialType" type="SpatialMetaType" use="required" />
-        <xs:attribute name="semanticType" type="SemanticMetaType" />
+        <xs:attribute name="spatialType" type="SpatialMetaType" use="required"/>
+        <xs:attribute name="scaleAndSubsystem" type="ScaleAndSubsystemType"/>
     </xs:complexType>
 
     <xs:complexType name="NumericStateVariableType">
-        <xs:sequence>
-            <xs:element name="name" type="xs:string" />
-            <xs:element name="value" type="xs:double" />
-        </xs:sequence>
+        <xs:all>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="value" type="xs:double"/>
+        </xs:all>
         
-        <xs:attribute name="semanticType" type="SemanticMetaType" />
+        <xs:attribute name="scaleAndSubsystem" type="ScaleAndSubsystemType"/>
     </xs:complexType>
     
     <!-- User-defined simple types -->
 
-    <xs:simpleType name="SemanticMetaType">
+    <xs:simpleType name="ScaleAndSubsystemType">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9a-zA-Z]+(\.[0-9a-zA-Z]+)*"/>
+            <xs:pattern value="[0-9a-zA-Z]+\.[0-9a-zA-Z]+"/>
         </xs:restriction>
     </xs:simpleType>
 
     /*{% for spatial_measure in spatial_measures %}*/
     <xs:simpleType name="/*{{ spatial_measure.name|first_to_upper }}*/Type">
         <xs:restriction base="xs:double">
-            <xs:minInclusive value="/*{{ spatial_measure.min_value }}*/" />
-            <xs:maxInclusive value="/*{{ spatial_measure.max_value }}*/" />
+            <xs:minInclusive value="/*{{ spatial_measure.min_value }}*/"/>
+            <xs:maxInclusive value="/*{{ spatial_measure.max_value }}*/"/>
         </xs:restriction>
     </xs:simpleType>
     
@@ -95,7 +95,7 @@
     <xs:simpleType name="SpatialMetaType">
         <xs:restriction base="xs:string">
         /*{% for spatial_entity in spatial_entities %}*/
-            <xs:enumeration value="/*{{ spatial_entity.name }}*/" />
+            <xs:enumeration value="/*{{ spatial_entity.name }}*/"/>
         /*{% endfor %}*/
         </xs:restriction>
     </xs:simpleType>

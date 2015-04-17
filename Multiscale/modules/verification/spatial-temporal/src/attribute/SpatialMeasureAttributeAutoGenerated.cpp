@@ -75,23 +75,23 @@ double
 multiscale::verification::spatialmeasure::getMaxValidSpatialMeasureValue(const SpatialMeasureType &spatialMeasureType) {
     switch (spatialMeasureType) {
         case SpatialMeasureType::Clusteredness:
-            return 1E+37;
+            return 1;
             break;
             
         case SpatialMeasureType::Density:
-            return 1E+37;
+            return 1;
             break;
             
         case SpatialMeasureType::Area:
-            return 1E+37;
+            return 1E+6;
             break;
             
         case SpatialMeasureType::Perimeter:
-            return 1E+37;
+            return 1E+6;
             break;
             
         case SpatialMeasureType::DistanceFromOrigin:
-            return 1E+37;
+            return 1E+6;
             break;
             
         case SpatialMeasureType::Angle:
@@ -111,11 +111,11 @@ multiscale::verification::spatialmeasure::getMaxValidSpatialMeasureValue(const S
             break;
             
         case SpatialMeasureType::CentroidX:
-            return 1E+37;
+            return 1E+6;
             break;
             
         case SpatialMeasureType::CentroidY:
-            return 1E+37;
+            return 1E+6;
             break;
             
         default:

@@ -13,16 +13,19 @@ using namespace multiscale::verification;
 
 
 BayesianModelChecker::BayesianModelChecker(const AbstractSyntaxTree &abstractSyntaxTree,
-                                           const TypeSemanticsTable &typeSemanticsTable,
+                                           const MultiscaleArchitectureGraph &multiscaleArchitectureGraph,
                                            double alpha, double beta, double bayesFactorThreshold)
-                                           : ModelChecker(abstractSyntaxTree, typeSemanticsTable) {
+                                           : ModelChecker(
+                                               abstractSyntaxTree,
+                                               multiscaleArchitectureGraph
+                                           ) {
     validateInput(alpha, beta, bayesFactorThreshold);
 
     this->alpha                 = alpha;
     this->beta                  = beta;
     this->bayesFactorThreshold  = bayesFactorThreshold;
 
-    initialise();
+    initialize();
 }
 
 BayesianModelChecker::~BayesianModelChecker() {}
@@ -84,7 +87,7 @@ void BayesianModelChecker::validateBayesFactorThreshold(double bayesFactorThresh
     }
 }
 
-void BayesianModelChecker::initialise() {
+void BayesianModelChecker::initialize() {
     probability             = abstractSyntaxTree.getProbability();
     typeIErrorUpperBound    = 0;
 

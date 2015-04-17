@@ -21,7 +21,7 @@
 
 namespace mv = multiscale::verification;
 
-const std::string INPUT_LOGIC_PROPERTY = "P > 0.6 [F [0, 3] (avg(clusteredness(clusters)) > 20)]";
+const std::string INPUT_LOGIC_PROPERTY = "P > 0.6 [F [0, 3] (avg(clusteredness(clusters)) > 0.333333333333)]";
 
 
 namespace multiscaletest {
@@ -34,9 +34,9 @@ namespace multiscaletest {
             std::vector<mv::SpatialTemporalTrace> 
                 traces;                         /*!< The collection of spatio-temporal traces */
 
-            TypeSemanticsTable
-                typeSemanticsTable;             /*!< The type semantics table mapping semantic criteria values to
-                                                     abstract natural numbers */
+            MultiscaleArchitectureGraph
+                multiscaleArchitectureGraph;    /*!< The multiscale architecture graph encoding the hierarchical 
+                                                     organization of the scales and subsystems */
             
             mv::AbstractSyntaxTree                
                 abstractSyntaxTree;             /*!< The abstract syntax tree corresponding to the logic property */
@@ -59,36 +59,36 @@ namespace multiscaletest {
            //! Validate the results of the test
            virtual void ValidateTestResults() override;
 
-           //! Initialise the model checker
-           virtual void InitialiseModelChecker() = 0;
+           //! Initialize the model checker
+           virtual void InitializeModelChecker() = 0;
 
         private:
 
            //! Initialisation function
-           void Initialise();
+           void Initialize();
 
-           //! Initialise the collection of spatio-temporal traces
-           void InitialiseSpatioTemporalTraces();
+           //! Initialize the collection of spatio-temporal traces
+           void InitializeSpatioTemporalTraces();
 
-           //! Initialise the type semantics table
-           void InitialiseTypeSemanticsTable();
+           //! Initialize the multiscale architecture graph
+           void InitializeMultiscaleArchitectureGraph();
            
-           //! Initialise the abstract syntax tree
-           void InitialiseAbstractSyntaxTree();
+           //! Initialize the abstract syntax tree
+           void InitializeAbstractSyntaxTree();
 
-           //! Initialise the collection of spatio-temporal traces with the given spatial entity clusteredness values
+           //! Initialize the collection of spatio-temporal traces with the given spatial entity clusteredness values
            /*!
             * The assumption is that each timepoint contains only one spatial entity of the same type.
             * Therefore each clusteredness value corresponds to a different timepoint and spatial entity.
             *
             * \param clusterednessValues The collection of clusteredness values
             */
-           void InitialiseSpatioTemporalTraceWithClusterednessValues(const std::vector<double> clusterednessValues);
+           void InitializeSpatioTemporalTraceWithClusterednessValues(const std::vector<double> clusterednessValues);
 
     };
 
     bool ModelCheckerTest::RunModelCheckingTest() {
-        Initialise();
+        Initialize();
 
         RunTest();
         ValidateTestResults();
@@ -108,41 +108,41 @@ namespace multiscaletest {
 
     void ModelCheckerTest::ValidateTestResults() {}
 
-    void ModelCheckerTest::Initialise() {
-        InitialiseSpatioTemporalTraces();
-        InitialiseTypeSemanticsTable();
-        InitialiseAbstractSyntaxTree();
-        InitialiseModelChecker();
+    void ModelCheckerTest::Initialize() {
+        InitializeSpatioTemporalTraces();
+        InitializeMultiscaleArchitectureGraph();
+        InitializeAbstractSyntaxTree();
+        InitializeModelChecker();
     }
 
-    void ModelCheckerTest::InitialiseSpatioTemporalTraces() {
+    void ModelCheckerTest::InitializeSpatioTemporalTraces() {
         traces.clear();
 
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{10, 20, 30});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{30, 20, 10});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{10, 20, 10});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{30, 20, 30});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{20, 20, 20});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{10, 20, 20});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{30, 20, 20});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{20, 20, 30});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{20, 20, 10});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{10, 20, 20, 10});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{30, 20, 20, 30});
-        InitialiseSpatioTemporalTraceWithClusterednessValues(std::vector<double>{10, 20, 20, 30});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.166666666667, 0.333333333333, 0.5});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.5, 0.333333333333, 0.166666666667});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.166666666667, 0.333333333333, 0.166666666667});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.5, 0.333333333333, 0.5});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.333333333333, 0.333333333333, 0.333333333333});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.166666666667, 0.333333333333, 0.333333333333});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.5, 0.333333333333, 0.333333333333});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.333333333333, 0.333333333333, 0.5});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.333333333333, 0.333333333333, 0.166666666667});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.166666666667, 0.333333333333, 0.333333333333, 0.166666666667});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.5, 0.333333333333, 0.333333333333, 0.5});
+        InitializeSpatioTemporalTraceWithClusterednessValues(std::vector<double>{0.166666666667, 0.333333333333, 0.333333333333, 0.5});
     }
 
-    void ModelCheckerTest::InitialiseTypeSemanticsTable() {
+    void ModelCheckerTest::InitializeMultiscaleArchitectureGraph() {
         // Do nothing
     }
     
-    void ModelCheckerTest::InitialiseAbstractSyntaxTree() {
+    void ModelCheckerTest::InitializeAbstractSyntaxTree() {
         mv::Parser parser(INPUT_LOGIC_PROPERTY);
 
         parser.parse(abstractSyntaxTree);
     }
 
-    void ModelCheckerTest::InitialiseSpatioTemporalTraceWithClusterednessValues(const std::vector<double> clusterednessValues) {
+    void ModelCheckerTest::InitializeSpatioTemporalTraceWithClusterednessValues(const std::vector<double> clusterednessValues) {
         mv::SpatialTemporalTrace                            trace;
         mv::TimePoint                                       timePoint;
         std::list<std::shared_ptr<SpatialEntity>>::iterator iterator;

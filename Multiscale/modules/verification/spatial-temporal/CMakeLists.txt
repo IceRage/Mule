@@ -16,7 +16,7 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/util)
 #------------------------------------------------------------
 # Generate source files considering the configuration file
 # config/verification/spatial-temporal/spatial_description.xml 
-# if any of them are missing
+# if any of the immediately below mentioned files are missing
 #------------------------------------------------------------
 
 set(CUSTOM_GENERATED_DEPENDENCY_FILES
@@ -33,6 +33,7 @@ set(CUSTOM_GENERATED_DEPENDENCY_FILES
     "${PROJECT_SOURCE_DIR}/modules/verification/spatial-temporal/test/evaluation/EmptyTraceTest.hpp"
     "${PROJECT_SOURCE_DIR}/modules/verification/spatial-temporal/test/evaluation/NumericStateVariableTraceTest.hpp"
     "${PROJECT_SOURCE_DIR}/modules/verification/spatial-temporal/test/evaluation/SpatialEntitiesTraceTest.hpp"
+    "${PROJECT_SOURCE_DIR}/modules/verification/spatial-temporal/test/evaluation/TimepointsSpatialEntitiesAttributesInitializer.hpp"
     "${PROJECT_SOURCE_DIR}/modules/verification/spatial-temporal/test/parsing/ParserTest.hpp"
 )
 
@@ -49,7 +50,8 @@ endforeach(DEPENDENT_FILE)
 #------------------------------------------------------------
 # Generate source files considering the configuration file
 # config/verification/spatial-temporal/spatial_description.xml 
-# if any of them have been updated since the last build
+# if any of the immediately below mentioned files have been 
+# updated since the last build
 #------------------------------------------------------------
 
 if("${CMAKE_CUSTOM_MODEL_CHECKER}" STREQUAL "Generate")
@@ -59,7 +61,7 @@ if("${CMAKE_CUSTOM_MODEL_CHECKER}" STREQUAL "Generate")
         ${PROJECT_SOURCE_DIR}/script/verification/generator/generator.py
     )
     
-    # Initialise the list of output and dependent files
+    # Initialize the list of output and dependent files
     set(CUSTOM_GENERATOR_OUTPUT_FILES
         "${PROJECT_SOURCE_DIR}/config/verification/spatial-temporal/schema/MSTML_L1V1.xsd"
     )
@@ -82,6 +84,7 @@ if("${CMAKE_CUSTOM_MODEL_CHECKER}" STREQUAL "Generate")
         "${PROJECT_SOURCE_DIR}/script/verification/generator/templates/test/evaluation/empty_trace_test_hpp.tpl"
         "${PROJECT_SOURCE_DIR}/script/verification/generator/templates/test/evaluation/numeric_state_variable_trace_test_hpp.tpl"
         "${PROJECT_SOURCE_DIR}/script/verification/generator/templates/test/evaluation/spatial_entities_trace_test_hpp.tpl"
+        "${PROJECT_SOURCE_DIR}/script/verification/generator/templates/test/evaluation/timepoints_spatial_entities_attributes_initializer_hpp.tpl"
         "${PROJECT_SOURCE_DIR}/script/verification/generator/templates/test/parsing/parser_test_hpp.tpl"
     )
     
@@ -120,10 +123,10 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/data/SpatialTemporalDataReader.cpp
 )
 
-# Set the path to the type semantics table xml schema definition file
+# Set the path to the multiscale architecture graph xml schema definition file
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/model/TypeSemanticsTable.cpp.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/model/TypeSemanticsTable.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/model/MultiscaleArchitectureGraph.cpp.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/model/MultiscaleArchitectureGraph.cpp
 )
 
 # Set the core model checker source files
@@ -150,12 +153,13 @@ set(CORE_MODEL_CHECKER_SRC
     src/exception/ParserGrammarExceptionHandler.cpp
     
     src/model/AbstractSyntaxTree.cpp
+    src/model/MultiscaleArchitectureGraph.cpp
     src/model/NumericStateVariableId.cpp
-    src/model/SemanticType.cpp
+    src/model/ScaleAndSubsystem.cpp
     src/model/SpatialEntity.cpp
     src/model/SpatialTemporalTrace.cpp
+    src/model/StateVariable.cpp
     src/model/TimePoint.cpp
-    src/model/TypeSemanticsTable.cpp
     
     src/parsing/BinaryNumericMeasureGrammar.cpp
     src/parsing/BinaryStatisticalMeasureGrammar.cpp
@@ -166,15 +170,15 @@ set(CORE_MODEL_CHECKER_SRC
     src/parsing/NumericStateVariableGrammar.cpp
     src/parsing/Parser.cpp
     src/parsing/PrimaryNumericMeasureGrammar.cpp
-    src/parsing/SemanticTypeGrammar.cpp
-    src/parsing/SemanticTypeStringGrammar.cpp
+    src/parsing/ScaleAndSubsystemGrammar.cpp
+    src/parsing/ScaleAndSubsystemStringGrammar.cpp
     src/parsing/SpatialMeasureCollectionGrammar.cpp
     src/parsing/TemporalNumericCollectionGrammar.cpp
     src/parsing/TemporalNumericMeasureGrammar.cpp
     src/parsing/UnaryNumericMeasureGrammar.cpp
     src/parsing/UnaryStatisticalMeasureGrammar.cpp
     
-    src/visitor/SemanticTypeEvaluator.cpp
+    src/visitor/ScaleAndSubsystemEvaluator.cpp
 )
 
 # Mule
@@ -210,6 +214,136 @@ AddDebugPostfix(Mule)
 
 target_link_libraries(Mule util)
 target_link_libraries(Mule ${XERCESC_LIBRARY})
+
+
+# LogicPropertyDataReaderSample
+
+set(LOGIC_PROPERTY_DATA_READER_SAMPLE_SRC
+    "${CORE_MODEL_CHECKER_SRC}"
+
+    src/data/LogicPropertyDataReader.cpp
+    
+    sample/LogicPropertyDataReaderSample.cpp
+)
+
+add_executable(LogicPropertyDataReaderSample ${LOGIC_PROPERTY_DATA_READER_SAMPLE_SRC})
+AddSample(LogicPropertyDataReaderSample)
+
+target_link_libraries(LogicPropertyDataReaderSample util)
+
+
+# MSTMLSubfilesMergerSample
+
+set(MSTML_SUBFILES_MERGER_SAMPLE_SRC
+    "${CORE_MODEL_CHECKER_SRC}"
+
+    src/data/MSTMLSubfilesMerger.cpp
+    src/data/SpatialTemporalDataReader.cpp
+    src/data/SpatialTemporalDataReaderAutoGenerated.cpp
+    src/data/SpatialTemporalDataWriter.cpp
+    src/data/SpatialTemporalDataWriterAutoGenerated.cpp
+
+    sample/MSTMLSubfilesMergerSample.cpp
+)
+
+add_executable(MSTMLSubfilesMergerSample ${MSTML_SUBFILES_MERGER_SAMPLE_SRC})
+AddSample(MSTMLSubfilesMergerSample)
+
+target_link_libraries(MSTMLSubfilesMergerSample util)
+
+
+# MultiscaleArchitectureGraphDataReaderSample
+
+set(MULTISCALE_ARCHITECTURE_GRAPH_DATA_READER_SAMPLE_SRC
+    src/model/ScaleAndSubsystem.cpp
+    src/model/MultiscaleArchitectureGraph.cpp
+
+    sample/MultiscaleArchitectureGraphDataReaderSample.cpp
+)
+
+add_executable(MultiscaleArchitectureGraphDataReaderSample ${MULTISCALE_ARCHITECTURE_GRAPH_DATA_READER_SAMPLE_SRC})
+AddSample(MultiscaleArchitectureGraphDataReaderSample)
+
+target_link_libraries(MultiscaleArchitectureGraphDataReaderSample util)
+
+
+# ParserSample
+
+set(PARSER_SAMPLE_SRC
+    "${CORE_MODEL_CHECKER_SRC}"
+    
+    sample/ParserSample.cpp 
+)
+
+
+# ParserEvaluationSample
+
+set(PARSER_EVALUATION_SAMPLE_SRC
+    "${CORE_MODEL_CHECKER_SRC}"
+    
+    sample/ParserEvaluationSample.cpp 
+)
+
+add_executable(ParserEvaluationSample ${PARSER_EVALUATION_SAMPLE_SRC})
+AddSample(ParserEvaluationSample)
+
+target_link_libraries(ParserEvaluationSample util)
+
+
+# SpatialTemporalDataReaderSample
+
+set(SPATIAL_TEMPORAL_DATA_READER_SAMPLE_SRC
+    src/attribute/SpatialMeasureAttribute.cpp
+    src/attribute/SpatialMeasureAttributeAutoGenerated.cpp
+    src/attribute/SubsetOperationAttribute.cpp
+    src/attribute/SubsetSpecificAttribute.cpp
+    src/attribute/SubsetSpecificAttributeAutoGenerated.cpp
+    
+    src/data/SpatialTemporalDataReader.cpp
+    src/data/SpatialTemporalDataReaderAutoGenerated.cpp
+    
+    src/model/NumericStateVariableId.cpp
+    src/model/ScaleAndSubsystem.cpp
+    src/model/SpatialEntity.cpp
+    src/model/SpatialTemporalTrace.cpp
+    src/model/StateVariable.cpp
+    src/model/TimePoint.cpp
+
+    sample/SpatialTemporalDataReaderSample.cpp
+)
+
+add_executable(SpatialTemporalDataReaderSample ${SPATIAL_TEMPORAL_DATA_READER_SAMPLE_SRC})
+AddSample(SpatialTemporalDataReaderSample)
+
+target_link_libraries(SpatialTemporalDataReaderSample util)
+target_link_libraries(SpatialTemporalDataReaderSample ${XERCESC_LIBRARY})
+
+
+# TemporalDataReaderSample
+
+set(TEMPORAL_DATA_READER_SAMPLE_SRC
+    src/attribute/SpatialMeasureAttribute.cpp
+    src/attribute/SpatialMeasureAttributeAutoGenerated.cpp
+    src/attribute/SubsetOperationAttribute.cpp
+    src/attribute/SubsetSpecificAttribute.cpp
+    src/attribute/SubsetSpecificAttributeAutoGenerated.cpp
+        
+    src/data/TemporalDataReader.cpp
+    
+    src/model/NumericStateVariableId.cpp
+    src/model/ScaleAndSubsystem.cpp
+    src/model/SpatialEntity.cpp
+    src/model/SpatialTemporalTrace.cpp
+    src/model/StateVariable.cpp
+    src/model/TimePoint.cpp
+
+    sample/TemporalDataReaderSample.cpp
+)
+
+add_executable(TemporalDataReaderSample ${TEMPORAL_DATA_READER_SAMPLE_SRC})
+AddSample(TemporalDataReaderSample)
+
+target_link_libraries(TemporalDataReaderSample util)
 
 
 # ModelCheckerTest
@@ -274,11 +408,35 @@ set(MSTML_SUBFILES_MERGER_LINK_LIBS
 AddUnitTest(MSTMLSubfilesMergerTest "${MSTML_SUBFILES_MERGER_SRC}" "${MSTML_SUBFILES_MERGER_LINK_LIBS}")
 
 
+# MultiscaleArchitectureGraphTest
+
+# Set the path to the test data
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/model/MultiscaleArchitectureGraphTest.cpp.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/model/MultiscaleArchitectureGraphTest.cpp
+)
+
+set(MULTISCALE_ARCHITECTURE_GRAPH_TEST_SRC
+    "${CORE_MODEL_CHECKER_SRC}"
+    
+    test/model/MultiscaleArchitectureGraphTest.cpp   
+)
+
+set(MULTISCALE_ARCHITECTURE_GRAPH_TEST_LIBS
+    util
+    gtest
+    gtest_main
+)
+
+AddUnitTest(MultiscaleArchitectureGraphTest "${MULTISCALE_ARCHITECTURE_GRAPH_TEST_SRC}" "${MULTISCALE_ARCHITECTURE_GRAPH_TEST_LIBS}")
+
+
 # ParserEvaluationTest
 
 set(PARSER_EVALUATION_TEST_SRC
     "${CORE_MODEL_CHECKER_SRC}"
 
+    test/evaluation/NonEmptyTraceEvaluationTest.cpp
     test/evaluation/ParserEvaluationTest.cpp
     test/evaluation/TraceEvaluationTest.cpp
 )
@@ -307,131 +465,3 @@ set(PARSER_TEST_LINK_LIBS
 )
 
 AddUnitTest(ParserTest "${PARSER_TEST_SRC}" "${PARSER_TEST_LINK_LIBS}")
-
-
-# LogicPropertyDataReaderSample
-
-set(LOGIC_PROPERTY_DATA_READER_SAMPLE_SRC
-    "${CORE_MODEL_CHECKER_SRC}"
-
-    src/data/LogicPropertyDataReader.cpp
-    
-    sample/LogicPropertyDataReaderSample.cpp
-)
-
-add_executable(LogicPropertyDataReaderSample ${LOGIC_PROPERTY_DATA_READER_SAMPLE_SRC})
-AddSample(LogicPropertyDataReaderSample)
-
-target_link_libraries(LogicPropertyDataReaderSample util)
-
-
-# ParserSample
-
-set(PARSER_SAMPLE_SRC
-    "${CORE_MODEL_CHECKER_SRC}"
-    
-    sample/ParserSample.cpp 
-)
-
-
-# ParserEvaluationSample
-
-set(PARSER_EVALUATION_SAMPLE_SRC
-    "${CORE_MODEL_CHECKER_SRC}"
-    
-    sample/ParserEvaluationSample.cpp 
-)
-
-add_executable(ParserEvaluationSample ${PARSER_EVALUATION_SAMPLE_SRC})
-AddSample(ParserEvaluationSample)
-
-target_link_libraries(ParserEvaluationSample util)
-
-
-# SpatialTemporalDataReaderSample
-
-set(SPATIAL_TEMPORAL_DATA_READER_SAMPLE_SRC
-    src/attribute/SpatialMeasureAttribute.cpp
-    src/attribute/SpatialMeasureAttributeAutoGenerated.cpp
-    src/attribute/SubsetOperationAttribute.cpp
-    src/attribute/SubsetSpecificAttribute.cpp
-    src/attribute/SubsetSpecificAttributeAutoGenerated.cpp
-    
-    src/data/SpatialTemporalDataReader.cpp
-    src/data/SpatialTemporalDataReaderAutoGenerated.cpp
-    
-    src/model/NumericStateVariableId.cpp
-    src/model/SemanticType.cpp
-    src/model/SpatialEntity.cpp
-    src/model/SpatialTemporalTrace.cpp
-    src/model/TimePoint.cpp
-
-    sample/SpatialTemporalDataReaderSample.cpp
-)
-
-add_executable(SpatialTemporalDataReaderSample ${SPATIAL_TEMPORAL_DATA_READER_SAMPLE_SRC})
-AddSample(SpatialTemporalDataReaderSample)
-
-target_link_libraries(SpatialTemporalDataReaderSample util)
-target_link_libraries(SpatialTemporalDataReaderSample ${XERCESC_LIBRARY})
-
-
-# TemporalDataReaderSample
-
-set(TEMPORAL_DATA_READER_SAMPLE_SRC
-    src/attribute/SpatialMeasureAttribute.cpp
-    src/attribute/SpatialMeasureAttributeAutoGenerated.cpp
-    src/attribute/SubsetOperationAttribute.cpp
-    src/attribute/SubsetSpecificAttribute.cpp
-    src/attribute/SubsetSpecificAttributeAutoGenerated.cpp
-        
-    src/data/TemporalDataReader.cpp
-    
-    src/model/NumericStateVariableId.cpp
-    src/model/SemanticType.cpp
-    src/model/SpatialEntity.cpp
-    src/model/SpatialTemporalTrace.cpp
-    src/model/TimePoint.cpp
-
-    sample/TemporalDataReaderSample.cpp
-)
-
-add_executable(TemporalDataReaderSample ${TEMPORAL_DATA_READER_SAMPLE_SRC})
-AddSample(TemporalDataReaderSample)
-
-target_link_libraries(TemporalDataReaderSample util)
-
-
-# TypeSemanticsTableDataReaderSample
-
-set(TYPE_SEMANTICS_TABLE_DATA_READER_SAMPLE_SRC
-    src/model/SemanticType.cpp
-    src/model/TypeSemanticsTable.cpp
-
-    sample/TypeSemanticsTableDataReaderSample.cpp
-)
-
-add_executable(TypeSemanticsTableDataReaderSample ${TYPE_SEMANTICS_TABLE_DATA_READER_SAMPLE_SRC})
-AddSample(TypeSemanticsTableDataReaderSample)
-
-target_link_libraries(TypeSemanticsTableDataReaderSample util)
-
-
-# MSTMLSubfilesMergerSample
-
-set(MSTML_SUBFILES_MERGER_SAMPLE_SRC
-    "${CORE_MODEL_CHECKER_SRC}"
-
-    src/data/MSTMLSubfilesMerger.cpp
-    src/data/SpatialTemporalDataReader.cpp
-    src/data/SpatialTemporalDataReaderAutoGenerated.cpp
-    src/data/SpatialTemporalDataWriter.cpp
-    src/data/SpatialTemporalDataWriterAutoGenerated.cpp
-
-    sample/MSTMLSubfilesMergerSample.cpp
-)
-
-add_executable(MSTMLSubfilesMergerSample ${MSTML_SUBFILES_MERGER_SAMPLE_SRC})
-AddSample(MSTMLSubfilesMergerSample)
-
-target_link_libraries(MSTMLSubfilesMergerSample util)

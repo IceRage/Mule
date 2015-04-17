@@ -7,7 +7,7 @@
 /*{% endfor %}*/
  *****************************************************************************/
 
-#include "TraceEvaluationTest.hpp"
+#include "TimepointsNumericValuesInitializer.hpp"
 
 using namespace multiscale;
 using namespace multiscaletest;
@@ -16,91 +16,20 @@ using namespace multiscaletest;
 namespace multiscaletest {
 
     //! Class for testing evaluation of numeric state variable-only traces
-    class NumericStateVariableTraceTest : public TraceEvaluationTest {
+    class NumericStateVariableTraceTest : public NonEmptyTraceEvaluationTest {
 
-        protected:
-            
-            double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue;  /*!< The minimum /*{{ spatial_measures[0].name }}*/ value for the /*{{ spatial_entities[0].name }}*/ spatial entity type */
-            
         private:
 
-           //! Initialise the trace
-           virtual void InitialiseTrace() override;
+            //! Add values to timepoints
+            virtual void AddValuesToTimepoints() override;
 
     };
 
-    void NumericStateVariableTraceTest::InitialiseTrace() {
-        // Initialise protected class fields
-        nrOfTimePoints = 12;
-        
-        /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue = 1;
-        
-        // Initialise timepoints
-        trace.clear();
 
-        std::vector<TimePoint> timePoints;
+    void NumericStateVariableTraceTest::AddValuesToTimepoints() {
+        TimepointsNumericValuesInitializer numericValuesInitializer;
 
-        // Add timepoints to the trace
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            timePoints.push_back(TimePoint(i));
-        }
-
-        // Add a numeric state variable "A" (without type) to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            if (i % 4 == 0) {
-                timePoints[i].addNumericStateVariable(aNumericStateVariableId, aMinValue);
-            } else {
-                timePoints[i].addNumericStateVariable(aNumericStateVariableId, aMinValue + i);
-            }
-        }
-        
-        // Add a numeric state variable "A" (with type) to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            if (i % 4 == 0) {
-                timePoints[i].addNumericStateVariable(aWithTypeNumericStateVariableId, aMinValue);
-            } else {
-                timePoints[i].addNumericStateVariable(aWithTypeNumericStateVariableId, aMinValue + i);
-            }
-        }
-
-        // Initialise the aMaxValue field considering numeric state variable "A" (without type)
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            aMaxValue = std::max(aMaxValue, timePoints[i].getNumericStateVariableValue(aNumericStateVariableId));
-        }
-        
-        // Add a numeric state variable "B" (without type) to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            timePoints[i].addNumericStateVariable(bNumericStateVariableId, bConstantValue);
-        }
-        
-        // Add a numeric state variable "B" (with type) to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            timePoints[i].addNumericStateVariable(bWithTypeNumericStateVariableId, bConstantValue);
-        }
-
-        // Add a numeric state variable "C" to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            if (i % 4 == 0) {
-                timePoints[i].addNumericStateVariable(cNumericStateVariableId, cMaxValue);
-            } else {
-                timePoints[i].addNumericStateVariable(cNumericStateVariableId, nrOfTimePoints - i);
-            }
-        }
-
-        // Initialise the cMinValue field
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            cMinValue = std::min(cMinValue, timePoints[i].getNumericStateVariableValue(cNumericStateVariableId));
-        }
-        
-        // Add a numeric state variable "D" (with type) to the collection of timepoints
-        for (std::size_t i = 0; i < nrOfTimePoints; i++) {
-            timePoints[i].addNumericStateVariable(dNumericStateVariableId, dConstantValue);
-        }
-
-        // Add all timepoints to the trace
-        for (TimePoint &timePoint : timePoints) {
-            trace.addTimePoint(timePoint);
-        }
+        numericValuesInitializer.addValuesOfNumericStateVariablesToTimepoints(timePoints);
     }
 
 };
@@ -494,7 +423,7 @@ TEST_F(NumericStateVariableTraceTest, HeterogeneousTimeseriesComponentPeak) {
 }
 
 TEST_F(NumericStateVariableTraceTest, HeterogeneousTimeseriesComponentValley) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(enteringValue(valley, [0, 11] {C}(type = Organ.Heart))) < 7.001 ^ avg(enteringValue(valley, [0, 11] {C}(type = Organ.Heart))) > 6.99]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(enteringValue(valley, [0, 11] {C}(scaleAndSubsystem = Organ.Heart))) < 7.001 ^ avg(enteringValue(valley, [0, 11] {C}(scaleAndSubsystem = Organ.Heart))) > 6.99]"));
 }
 
 
@@ -524,7 +453,7 @@ TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentAscent) {
 }
 
 TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentDescent) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [mode(values(descent, [0, 11] {C}(type = Organ.Heart))) = 12]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [mode(values(descent, [0, 11] {C}(scaleAndSubsystem = Organ.Heart))) = 12]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentPlateau) {
@@ -536,7 +465,7 @@ TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentUniformAscen
 }
 
 TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentUniformDescent) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [avg(values(uniformDescent, [0, 11] {C}(type = Organ.Heart))) = 7.5]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [avg(values(uniformDescent, [0, 11] {C}(scaleAndSubsystem = Organ.Heart))) = 7.5]"));
 }
 
 
@@ -549,7 +478,7 @@ TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesComponentUniformDesce
 /////////////////////////////////////////////////////////
 
 TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesMeasureTimeSpan) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(timeSpan(descent, [0, 11] {C}(type = Organ.Heart))) = 3]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [avg(timeSpan(descent, [0, 11] {C}(scaleAndSubsystem = Organ.Heart))) = 3]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, HomogeneousTimeseriesMeasureValue) {
@@ -766,28 +695,28 @@ TEST_F(NumericStateVariableTraceTest, NumericStateVariableWithoutTypes) {
     EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{A} <= 1]"));
 }
 
-TEST_F(NumericStateVariableTraceTest, NumericStateVariableTypeLeft) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) = 1]"));
+TEST_F(NumericStateVariableTraceTest, NumericStateVariableScaleAndSubsystemLeft) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) = 1]"));
 }
 
-TEST_F(NumericStateVariableTraceTest, NumericStateVariableTypeRight) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [3 <= {B}(type = Organ.Kidney)]"));
+TEST_F(NumericStateVariableTraceTest, NumericStateVariableScaleAndSubsystemRight) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [3 <= {B}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableBothTypes) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {B}(type = Organ.Kidney)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {B}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableBothTypesAndDifferentTypeValues) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [add({A}(type = Organ.Kidney), 11) = {C}(type = Organ.Heart)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [add({A}(scaleAndSubsystem = Organ.Kidney), 11) = {C}(scaleAndSubsystem = Organ.Heart)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableOneNumericStateVariable) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{C}(type = Organ.Heart) = 12]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [{C}(scaleAndSubsystem = Organ.Heart) = 12]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableWrongRhsType) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Kidney) <= {C}(type = Organ.Kidney)]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Kidney) <= {C}(scaleAndSubsystem = Organ.Kidney)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableWrongName) {
@@ -799,19 +728,19 @@ TEST_F(NumericStateVariableTraceTest, NumericStateVariableWrongLongName) {
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableWrongTypeLhs) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(type = Organ.Heart) <= {B}]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{A}(scaleAndSubsystem = Organ.Heart) <= {B}]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, NumericStateVariableWrongTypeLhsLargerValue) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{B}(type = 213121) <= {B}]"));
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [{B}(scaleAndSubsystem = 213.121) <= {B}]"));
 }
 
-TEST_F(NumericStateVariableTraceTest, NumericStateVariableSemanticTypeNotInTypeSemanticsTable) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] ({D}(type = Organ.Liver) = 5)]"));
+TEST_F(NumericStateVariableTraceTest, NumericStateVariableScaleAndSubsystemNotInMultiscaleArchitectureGraph) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [G [0, 11] ({D}(scaleAndSubsystem = Organ.Liver) = 5)]"));
 }
 
-TEST_F(NumericStateVariableTraceTest, NumericStateVariableTypeInTypeSemanticsTable) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [G [0, 11] ({B}(type = Organ.Kidney) = 3)]"));
+TEST_F(NumericStateVariableTraceTest, NumericStateVariableScaleAndSubsystemInMultiscaleArchitectureGraph) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [G [0, 11] ({B}(scaleAndSubsystem = Organ.Kidney) = 3)]"));
 }
 
 
@@ -857,13 +786,13 @@ TEST_F(NumericStateVariableTraceTest, ProbabilisticLogicProperty) {
 /////////////////////////////////////////////////////////
 //
 //
-// SemanticType
+// ScaleAndSubsystem
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST_F(NumericStateVariableTraceTest, SemanticType) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.4 [{C}(type = Organ.Heart) = 12]"));
+TEST_F(NumericStateVariableTraceTest, ScaleAndSubsystem) {
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.4 [{C}(scaleAndSubsystem = Organ.Heart) = 12]"));
 }
 
 
@@ -876,7 +805,7 @@ TEST_F(NumericStateVariableTraceTest, SemanticType) {
 /////////////////////////////////////////////////////////
 
 TEST_F(NumericStateVariableTraceTest, SimilarityMeasureAntiSimilar) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [opposite(d([0, 11] {A}), d([0, 11] {C} (type = Organ.Heart)), 0)]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [opposite(d([0, 11] {A}), d([0, 11] {C} (scaleAndSubsystem = Organ.Heart)), 0)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, SimilarityMeasureSimilar) {
@@ -939,7 +868,7 @@ TEST_F(NumericStateVariableTraceTest, SpatialMeasureCollection) {
 /////////////////////////////////////////////////////////
 
 TEST_F(NumericStateVariableTraceTest, Subset) {
-    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= subtract({B}, subtract({B}, " + StringManipulator::toString<double>(bConstantValue) + "))]"));
+    EXPECT_TRUE(RunEvaluationTest("P >= 0.3 [count(/*{{ spatial_measures[0].name }}*/(/*{{ spatial_entities[0].name }}*/s)) <= subtract({B}, subtract({B}, 3))]"));
 }
 
 
@@ -1305,13 +1234,13 @@ TEST_F(NumericStateVariableTraceTest, UnaryStatisticalSpatial) {
 /////////////////////////////////////////////////////////
 //
 //
-// UnaryTypeConstraint
+// UnaryScaleAndSubsystemConstraint
 //
 //
 /////////////////////////////////////////////////////////
 
-TEST_F(NumericStateVariableTraceTest, UnaryTypeConstraint) {
-    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, type < 1))) = 1]"));
+TEST_F(NumericStateVariableTraceTest, UnaryScaleAndSubsystemConstraint) {
+    EXPECT_FALSE(RunEvaluationTest("P >= 0.3 [F [0, 11] count(/*{{ spatial_measures[0].name }}*/(filter(/*{{ spatial_entities[0].name }}*/s, scaleAndSubsystem < 1.0))) = 1]"));
 }
 
 
@@ -1497,7 +1426,7 @@ TEST_F(NumericStateVariableTraceTest, DecreasingUntilIncreasingValueReal) {
 }
 
 TEST_F(NumericStateVariableTraceTest, DecreasingUntilIncreasingValueNumericStateVariable) {
-    EXPECT_TRUE(RunEvaluationTest("P < 0.9 [(d({C}(type = Organ.Heart)) < 0) U [0, 10] (d({C}(type = Organ.Heart)) > 0)]"));
+    EXPECT_TRUE(RunEvaluationTest("P < 0.9 [(d({C}(scaleAndSubsystem = Organ.Heart)) < 0) U [0, 10] (d({C}(scaleAndSubsystem = Organ.Heart)) > 0)]"));
 }
 
 TEST_F(NumericStateVariableTraceTest, DecreasingUntilIncreasingValueUnaryNumeric) {

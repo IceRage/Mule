@@ -62,12 +62,13 @@ namespace multiscale {
 
                 double typeIErrorUpperBound;        /*!< The type I error upper bound */
 
-                BayesianModelCheckingResult modelCheckingResult; /*!< The result of the model checking task */
+                BayesianModelCheckingResult
+                    modelCheckingResult;            /*!< The result of the model checking task */
 
             public:
 
                 BayesianModelChecker(const AbstractSyntaxTree &abstractSyntaxTree,
-                                     const TypeSemanticsTable &typeSemanticsTable,
+                                     const MultiscaleArchitectureGraph &multiscaleArchitectureGraph,
                                      double alpha, double beta, double bayesFactorThreshold);
                 ~BayesianModelChecker();
 
@@ -131,7 +132,7 @@ namespace multiscale {
                 void validateBayesFactorThreshold(double bayesFactorThreshold);
 
                 //! Initialisation of some of the class members
-                void initialise();
+                void initialize();
 
                 //! Update the result of the model checking task
                 void updateModelCheckingResult();

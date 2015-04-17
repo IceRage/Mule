@@ -10,7 +10,7 @@
 /*{% for spatial_entity in spatial_entities %}*/
 #include "multiscale/verification/spatial-temporal/model//*{{ spatial_entity.name|first_to_upper }}*/.hpp"
 /*{% endfor %}*/
-#include "multiscale/verification/spatial-temporal/model/SemanticType.hpp"
+#include "multiscale/verification/spatial-temporal/model/ScaleAndSubsystem.hpp"
 #include "multiscale/verification/spatial-temporal/parsing/Parser.hpp"
 
 #include <iostream>
@@ -19,13 +19,13 @@ using namespace multiscale;
 using namespace multiscale::verification;
 
 
-// Initialise the provided trace
-void initialiseTrace(SpatialTemporalTrace &trace) {
+// Initialize the provided trace
+void initializeTrace(SpatialTemporalTrace &trace) {
     // Variables initialisation
     std::size_t nrOfTimePoints = 12;
 
-    NumericStateVariableId aNumericStateVariableId("A", 0);
-    NumericStateVariableId bNumericStateVariableId("B", 0);
+    NumericStateVariableId aNumericStateVariableId("A", ScaleAndSubsystem::DEFAULT_VALUE);
+    NumericStateVariableId bNumericStateVariableId("B", ScaleAndSubsystem::DEFAULT_VALUE);
 
     double aMinValue = 1;
     double aMaxValue = 0;
@@ -35,7 +35,7 @@ void initialiseTrace(SpatialTemporalTrace &trace) {
     double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue = 1;
     double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue = -1;
 
-    // Initialise timepoints
+    // Initialize timepoints
     trace.clear();
 
     std::vector<TimePoint> timePoints;
@@ -55,7 +55,7 @@ void initialiseTrace(SpatialTemporalTrace &trace) {
         }
     }
 
-    // Initialise the aMaxValue field
+    // Initialize the aMaxValue field
     for (std::size_t i = 0; i < nrOfTimePoints; i++) {
         aMaxValue = std::max(aMaxValue, timePoints[i].getNumericStateVariableValue(aNumericStateVariableId));
     }
@@ -73,7 +73,7 @@ void initialiseTrace(SpatialTemporalTrace &trace) {
         /*{% for spatial_measure in spatial_measures[1:] %}*/
             /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 2);
         /*{% endfor %}*/
-            /*{{ spatial_entities[0].name }}*/->setSemanticType(SemanticType::DEFAULT_VALUE);
+            /*{{ spatial_entities[0].name }}*/->setScaleAndSubsystem(ScaleAndSubsystem::DEFAULT_VALUE);
 
             timePoints[i].addSpatialEntityAndType(/*{{ spatial_entities[0].name }}*/, SubsetSpecificType::/*{{ spatial_entities[0].name|first_to_upper }}*/s);
         }
@@ -87,7 +87,7 @@ void initialiseTrace(SpatialTemporalTrace &trace) {
             /*{% for spatial_measure in spatial_measures[1:] %}*/
                 /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 3);
             /*{% endfor %}*/
-                /*{{ spatial_entity.name }}*/->setSemanticType(SemanticType::DEFAULT_VALUE);
+                /*{{ spatial_entity.name }}*/->setScaleAndSubsystem(ScaleAndSubsystem::DEFAULT_VALUE);
 
                 timePoints[i].addSpatialEntityAndType(/*{{ spatial_entity.name }}*/, SubsetSpecificType::/*{{ spatial_entity.name|first_to_upper }}*/s);
             }
@@ -104,17 +104,17 @@ void initialiseTrace(SpatialTemporalTrace &trace) {
 int main(int argc, char **argv) {
     std::string test;
     SpatialTemporalTrace trace;
-    TypeSemanticsTable typeSemanticsTable;
+    MultiscaleArchitectureGraph multiscaleArchitectureGraph;
     AbstractSyntaxTree result;
 
-    initialiseTrace(trace);
+    initializeTrace(trace);
 
     std::cout << "/////////////////////////////////////////////////////////\n\n";
-    std::cout << "\tA multidimensional multiscale logical query parser and evaluator...\n\n";
+    std::cout << "\tA multiscale multidimensional logic query parser and evaluator...\n\n";
     std::cout << "/////////////////////////////////////////////////////////\n\n";
 
     std::cout
-        << "Please enter a multidimensional multiscale logical query (or \"q\" to exit):" << std::endl
+        << "Please enter a multiscale multidimensional logic query (or \"q\" to exit):" << std::endl
         << std::endl;
 
 
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
                 std::cout << "-----------------------------------------------------" << std::endl;
                 std::cout << " Parsing succeeded"
                           << " and the AST evaluates to " 
-                          << (result.evaluate(trace, typeSemanticsTable) ? "true" : "false")
+                          << (result.evaluate(trace, multiscaleArchitectureGraph) ? "true" : "false")
                           << "!" << std::endl;
                 std::cout << "-----------------------------------------------------" << std::endl << std::endl;
             } else {

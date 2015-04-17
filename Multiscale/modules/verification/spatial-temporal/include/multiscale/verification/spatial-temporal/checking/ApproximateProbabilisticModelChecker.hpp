@@ -36,7 +36,7 @@ namespace multiscale {
             public:
 
                 ApproximateProbabilisticModelChecker(const AbstractSyntaxTree &abstractSyntaxTree,
-                                                     const TypeSemanticsTable &typeSemanticsTable,
+                                                     const MultiscaleArchitectureGraph &multiscaleArchitectureGraph,
                                                      double delta, double epsilon);
                 ~ApproximateProbabilisticModelChecker();
 
@@ -84,13 +84,13 @@ namespace multiscale {
                 bool isBetweenZeroAndOne(double value);
 
                 //! Initialisation of some of the class members
-                void initialise();
+                void initialize();
 
-                //! Initialise the number of required traces
+                //! Initialize the number of required traces
                 /*!
-                 *  Precondition: The class members delta and epsilon are correctly initialised.
+                 *  Precondition: The class members delta and epsilon are correctly initialized.
                  */
-                void initialiseNumberOfRequiredTraces();
+                void initializeNumberOfRequiredTraces();
 
                 //! Check if the given property holds considering the probability comparator (i.e. <=, >=)
                 /*! For queries of type :
