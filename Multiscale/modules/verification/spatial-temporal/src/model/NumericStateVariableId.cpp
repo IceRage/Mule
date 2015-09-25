@@ -9,9 +9,7 @@ using namespace multiscale::verification;
 
 NumericStateVariableId::NumericStateVariableId(const std::string &name,
                                                const std::string &scaleAndSubsystem)
-                                               : name(name) {
-    this->scaleAndSubsystem = scaleAndSubsystem;
-}
+                                               : StateVariable(scaleAndSubsystem), name(name) {}
 
 NumericStateVariableId::~NumericStateVariableId() {}
 
@@ -30,6 +28,18 @@ bool NumericStateVariableId::operator<(const NumericStateVariableId &rhs) const 
         if (this->scaleAndSubsystem.compare(rhs.scaleAndSubsystem) < 0) {
             return true;
         }
+    }
+
+    return false;
+}
+
+bool NumericStateVariableId::operator==(const NumericStateVariableId &rhs) const {
+    if (this->name.compare(rhs.name) == 0) {
+        return (
+            this->scaleAndSubsystem.compare(
+                rhs.scaleAndSubsystem
+            )  == 0
+        );
     }
 
     return false;

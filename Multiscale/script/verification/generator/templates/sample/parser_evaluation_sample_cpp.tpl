@@ -32,21 +32,25 @@ void initializeTrace(SpatialTemporalTrace &trace) {
 
     double bConstantValue = 3;
 
-    double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue = 1;
-    double /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue = -1;
+/*{% for spatial_entity in spatial_entities %}*/
+    /*{% for spatial_measure in spatial_measures %}*/
+    double /*{{ spatial_entity.name }}*/s/*{{ spatial_measure.name|first_to_upper }}*/MinValue = /*{{ spatial_measure.min_value }}*/;
+    double /*{{ spatial_entity.name }}*/s/*{{ spatial_measure.name|first_to_upper }}*/MaxValue = /*{{ spatial_measure.max_value }}*/;
+    /*{% endfor %}*/
+/*{% endfor %}*/
 
-    // Initialize timepoints
+    // Initialize time points
     trace.clear();
 
     std::vector<TimePoint> timePoints;
 
-    // Add timepoints containing the numeric state variable "B" to the collection of timepoints
+    // Add time points containing the numeric state variable "B" to the collection of time points
     for (std::size_t i = 0; i < nrOfTimePoints; i++) {
         timePoints.push_back(TimePoint(i));
         timePoints[i].addNumericStateVariable(bNumericStateVariableId, bConstantValue);
     }
 
-    // Add a second numeric state variable to the collection of timepoints
+    // Add a second numeric state variable to the collection of time points
     for (std::size_t i = 0; i < nrOfTimePoints; i++) {
         if (i % 4 == 0) {
             timePoints[i].addNumericStateVariable(aNumericStateVariableId, aMinValue);
@@ -60,18 +64,16 @@ void initializeTrace(SpatialTemporalTrace &trace) {
         aMaxValue = std::max(aMaxValue, timePoints[i].getNumericStateVariableValue(aNumericStateVariableId));
     }
 
-    // Add spatial entities to each timepoint
+    // Add spatial entities to each time point
     for (std::size_t i = 0; i < nrOfTimePoints; i++) {
 
-        // Add /*{{ spatial_entities[0].name }}*/s to the timepoint
+        // Add /*{{ spatial_entities[0].name }}*/s to the time point
         for (std::size_t j = ((((i + 1) % 4) == 0) ? (i - 1) : 0); j <= i; j++) {
             std::shared_ptr<SpatialEntity> /*{{ spatial_entities[0].name }}*/ = std::make_shared</*{{ spatial_entities[0].name|first_to_upper }}*/>();
 
-            /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue = std::max(/*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MaxValue, static_cast<double>((j * 2.4) + /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue));
-
-            /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, static_cast<double>((j * 2.4) + /*{{ spatial_entities[0].name }}*/s/*{{ spatial_measures[0].name|first_to_upper }}*/MinValue));
+            /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, ((i != 0) ? (static_cast<double>(j) / static_cast<double>(nrOfTimePoints - 1)) : 0) * (/*{{ spatial_entities[0].name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MaxValue" }}*/ - /*{{ spatial_entities[0].name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MinValue" }}*/) + /*{{ spatial_entities[0].name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MinValue" }}*/);
         /*{% for spatial_measure in spatial_measures[1:] %}*/
-            /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 2);
+            /*{{ spatial_entities[0].name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, (static_cast<double>(1) / static_cast<double>(2)) * (/*{{ spatial_entities[0].name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MaxValue" }}*/ - /*{{ spatial_entities[0].name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MinValue" }}*/) + /*{{ spatial_entities[0].name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MinValue" }}*/);
         /*{% endfor %}*/
             /*{{ spatial_entities[0].name }}*/->setScaleAndSubsystem(ScaleAndSubsystem::DEFAULT_VALUE);
 
@@ -79,22 +81,22 @@ void initializeTrace(SpatialTemporalTrace &trace) {
         }
 
     /*{% for spatial_entity in spatial_entities[1:] %}*/
-        // Add /*{{ spatial_entity.name }}*/s to the timepoint
+        // Add /*{{ spatial_entity.name }}*/s to the time point
         for (std::size_t k = 0; k <= i; k++) {
-                std::shared_ptr<SpatialEntity> /*{{ spatial_entity.name }}*/ = std::make_shared</*{{ spatial_entity.name|first_to_upper }}*/>();
+            std::shared_ptr<SpatialEntity> /*{{ spatial_entity.name }}*/ = std::make_shared</*{{ spatial_entity.name|first_to_upper }}*/>();
 
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, static_cast<double>((k * 0.3) + 0.7));
-            /*{% for spatial_measure in spatial_measures[1:] %}*/
-                /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, static_cast<double>(/*{{ spatial_measure.max_value }}*/ - /*{{ spatial_measure.min_value }}*/) / 3);
-            /*{% endfor %}*/
-                /*{{ spatial_entity.name }}*/->setScaleAndSubsystem(ScaleAndSubsystem::DEFAULT_VALUE);
+            /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measures[0].name|first_to_upper }}*/, ((i != 0) ? (static_cast<double>(k) / (static_cast<double>(nrOfTimePoints - 1) * 1.2)) : 0) * (/*{{ spatial_entity.name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MaxValue" }}*/ - /*{{ spatial_entity.name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MinValue" }}*/) + /*{{ spatial_entity.name ~ "s" ~ spatial_measures[0].name|first_to_upper ~ "MinValue" }}*/);
+        /*{% for spatial_measure in spatial_measures[1:] %}*/
+            /*{{ spatial_entity.name }}*/->setSpatialMeasureValue(SpatialMeasureType::/*{{ spatial_measure.name|first_to_upper }}*/, (static_cast<double>(1) / static_cast<double>(3)) * (/*{{ spatial_entity.name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MaxValue" }}*/ - /*{{ spatial_entity.name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MinValue" }}*/) + /*{{ spatial_entity.name ~ "s" ~ spatial_measure.name|first_to_upper ~ "MinValue" }}*/);
+        /*{% endfor %}*/
+            /*{{ spatial_entity.name }}*/->setScaleAndSubsystem(ScaleAndSubsystem::DEFAULT_VALUE);
 
-                timePoints[i].addSpatialEntityAndType(/*{{ spatial_entity.name }}*/, SubsetSpecificType::/*{{ spatial_entity.name|first_to_upper }}*/s);
-            }
+            timePoints[i].addSpatialEntityAndType(/*{{ spatial_entity.name }}*/, SubsetSpecificType::/*{{ spatial_entity.name|first_to_upper }}*/s);
+        }
     /*{% endfor %}*/
     }
 
-    // Add all timepoints to the trace
+    // Add all time points to the trace
     for (TimePoint &timePoint : timePoints) {
         trace.addTimePoint(timePoint);
     }

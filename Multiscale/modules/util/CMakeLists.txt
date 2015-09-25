@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(LIB_SRC
     src/ConsolePrinter.cpp
+    src/FileReader.cpp
     src/Filesystem.cpp
     src/geometry/MinEnclosingTriangleFinder.cpp
     src/Geometry2D.cpp
@@ -21,6 +22,7 @@ set(LIB_SRC
     src/OperatingSystem.cpp
     src/RGBColourGenerator.cpp
     src/StringManipulator.cpp
+    src/Timer.cpp
     src/XmlValidator.cpp
 
     src/statistics/BetaDistribution.cpp
@@ -124,6 +126,18 @@ AddSample(ExecuteProgramSample)
 target_link_libraries(ExecuteProgramSample util)
 
 
+# FileReaderSample
+
+set(FILE_READER_SAMPLE_SRC
+    sample/FileReaderSample.cpp
+)
+
+add_executable(FileReaderSample ${FILE_READER_SAMPLE_SRC})
+AddSample(FileReaderSample)
+
+target_link_libraries(FileReaderSample util)
+
+
 # LineCircleIntersectionSample
 
 set(LINE_CIRCLE_INTERSECTION_SAMPLE_SRC
@@ -172,6 +186,18 @@ add_executable(TangentsFromPointToPolygonSample ${TANGENTS_FROM_POINT_TO_POLYGON
 AddSample(TangentsFromPointToPolygonSample)
 
 target_link_libraries(TangentsFromPointToPolygonSample util)
+
+
+# TimerSample
+
+set(TIMER_SAMPLE_SRC
+    sample/TimerSample.cpp
+)
+
+add_executable(TimerSample ${TIMER_SAMPLE_SRC})
+AddSample(TimerSample)
+
+target_link_libraries(TimerSample util)
 
 
 # XmlValidatorSample

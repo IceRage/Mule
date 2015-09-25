@@ -50,9 +50,14 @@ std::string StringManipulator::replace(const std::string &initialString, const s
 std::vector<std::string> StringManipulator::split(const std::string &initialString,
                                                   const std::string &delimiter) {
     std::vector<std::string> tokens;
-    std::string initialStringCopy = initialString;
 
-    return boost::split(tokens, initialStringCopy, boost::is_any_of(delimiter));
+    return (
+        boost::split(
+            tokens,
+            initialString,
+            boost::is_any_of(delimiter)
+        )
+    );
 }
 
 std::string StringManipulator::trimRight(std::string &inputString) {
@@ -75,6 +80,37 @@ std::string StringManipulator::trimRight(const std::string &inputString) {
 
     return trimmedString;
 }
+
+
+namespace multiscale {
+
+    template <>
+    unsigned long StringManipulator::convert<unsigned long>(const std::string &inputString) {
+        return std::stoul(inputString);
+    }
+
+    template <>
+    long StringManipulator::convert<long>(const std::string &inputString) {
+        return std::stol(inputString);
+    }
+
+    template <>
+    int StringManipulator::convert<int>(const std::string &inputString) {
+        return std::stoi(inputString);
+    }
+
+    template <>
+    float StringManipulator::convert<float>(const std::string &inputString) {
+        return std::stof(inputString);
+    }
+
+    template <>
+    double StringManipulator::convert<double>(const std::string &inputString) {
+        return std::stod(inputString);
+    }
+
+};
+
 
 // Constants
 const char StringManipulator::DIR_SEPARATOR = '/';

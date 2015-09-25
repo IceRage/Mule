@@ -12,20 +12,17 @@ double ProbabilisticLogicPropertyAttribute::getProbability() {
     return probability;
 }
 
-bool ProbabilisticLogicPropertyAttribute::evaluate(const SpatialTemporalTrace &trace,
+bool ProbabilisticLogicPropertyAttribute::evaluate(SpatialTemporalTrace &trace,
                                                    const MultiscaleArchitectureGraph &multiscaleArchitectureGraph) {
     if (trace.length() == 0) {
         MS_throw(SpatialTemporalException, ERR_TRACE_LENGTH_ZERO);
     }
 
-    // Create a copy of the spatial-temporal trace
-    SpatialTemporalTrace traceCopy(trace);
-
     // Pass the copy of the spatial-temporal trace to the LogicPropertyVisitor
     return (
         boost::apply_visitor(
             LogicPropertyVisitor(
-                traceCopy,
+                trace,
                 multiscaleArchitectureGraph
             ),
             logicProperty,
@@ -36,4 +33,4 @@ bool ProbabilisticLogicPropertyAttribute::evaluate(const SpatialTemporalTrace &t
 
 
 // Constants
-const std::string ProbabilisticLogicPropertyAttribute::ERR_TRACE_LENGTH_ZERO = "The length of the trace provided for evaluating the probabilistic logic property is zero. Please provide a trace which contains at least one timepoint.";
+const std::string ProbabilisticLogicPropertyAttribute::ERR_TRACE_LENGTH_ZERO = "The length of the trace provided for evaluating the probabilistic logic property is zero. Please provide a trace which contains at least one time point.";

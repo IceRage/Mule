@@ -1,4 +1,5 @@
 #include "multiscale/util/Geometry2D.hpp"
+#include "multiscale/util/Numeric.hpp"
 #include "multiscale/verification/spatial-temporal/exception/SpatialTemporalException.hpp"
 #include "multiscale/verification/spatial-temporal/model/TimePoint.hpp"
 
@@ -10,9 +11,8 @@ using namespace multiscale::verification;
 using namespace multiscale::verification::subsetspecific;
 
 
-TimePoint::TimePoint(unsigned long value) {
-    this->value             = value;
-    this->spatialEntities   = std::vector<std::list<std::shared_ptr<SpatialEntity>>>(NR_SUBSET_SPECIFIC_TYPES);
+TimePoint::TimePoint(double value) : value(value) {
+    this->spatialEntities = std::vector<std::list<std::shared_ptr<SpatialEntity>>>(NR_SUBSET_SPECIFIC_TYPES);
 
     this->consideredSpatialEntityTypes.reset();
 }
@@ -24,13 +24,13 @@ TimePoint::TimePoint(const TimePoint &timePoint)
 
 TimePoint::~TimePoint() {}
 
-unsigned long
+double
 TimePoint::getValue() const {
     return value;
 }
 
 void
-TimePoint::setValue(unsigned long value) {
+TimePoint::setValue(double value) {
     this->value = value;
 }
 
@@ -126,7 +126,7 @@ TimePoint::containsSpatialEntity(const std::shared_ptr<SpatialEntity> &spatialEn
         }
     }
 
-    // If the spatial entity was not found then it is not contained by the timepoint
+    // If the spatial entity was not found then it is not contained by the time point
     return false;
 }
 
@@ -157,7 +157,7 @@ TimePoint::containsSpatialEntity(const std::shared_ptr<SpatialEntity> &spatialEn
         }
     }
 
-    // If the spatial entity was not found then it is not contained by the timepoint
+    // If the spatial entity was not found then it is not contained by the time point
     return false;
 }
 
@@ -239,8 +239,11 @@ TimePoint::getConsideredSpatialEntities() const {
 
     for (size_t i = 0; i < NR_SUBSET_SPECIFIC_TYPES; i++) {
         if (consideredSpatialEntityTypes[i] == true) {
-            consideredSpatialEntities.insert(consideredSpatialEntities.begin(), (spatialEntities[i]).begin(),
-                                             (spatialEntities[i]).end());
+            consideredSpatialEntities.insert(
+                consideredSpatialEntities.begin(),
+                (spatialEntities[i]).begin(),
+                (spatialEntities[i]).end()
+            );
         }
     }
 
@@ -259,22 +262,22 @@ TimePoint::getNumericStateVariableValue(const NumericStateVariableId &id) const 
     return it->second;
 }
 
-std::map<NumericStateVariableId, double>::iterator
+std::unordered_map<NumericStateVariableId, double>::iterator
 TimePoint::getNumericStateVariablesBeginIterator() {
     return numericStateVariables.begin();
 }
 
-std::map<NumericStateVariableId, double>::const_iterator
+std::unordered_map<NumericStateVariableId, double>::const_iterator
 TimePoint::getNumericStateVariablesBeginIterator() const {
     return numericStateVariables.begin();
 }
 
-std::map<NumericStateVariableId, double>::iterator
+std::unordered_map<NumericStateVariableId, double>::iterator
 TimePoint::getNumericStateVariablesEndIterator() {
     return numericStateVariables.end();
 }
 
-std::map<NumericStateVariableId, double>::const_iterator
+std::unordered_map<NumericStateVariableId, double>::const_iterator
 TimePoint::getNumericStateVariablesEndIterator() const {
     return numericStateVariables.end();
 }
@@ -303,24 +306,24 @@ TimePoint::removeSpatialEntity(std::list<std::shared_ptr<SpatialEntity>>::iterat
 }
 
 bool
-TimePoint::operator==(const TimePoint &rhsTimepoint) {
-    // If the timepoints values are different are different return false
-    if (value != rhsTimepoint.value) {
-        return false;
-    // Otherwise check if the numeric state variables and spatial entities are equal
-    } else {
+TimePoint::operator==(const TimePoint &rhsTimePoint) {
+    // If the time points values are equal then check if the numeric state variables and spatial entities are equal
+    if (Numeric::almostEqual(value, rhsTimePoint.value)) {
         return (
-            areEqualNumericStateVariables(rhsTimepoint) &&
-            areEqualSpatialEntities(rhsTimepoint)
+            areEqualNumericStateVariables(rhsTimePoint) &&
+            areEqualSpatialEntities(rhsTimePoint)
         );
     }
+
+    // Otherwise return false
+    return false;
 }
 
 bool
-TimePoint::operator!=(const TimePoint &rhsTimepoint) {
-    // The timepoints are different if they are not equal
+TimePoint::operator!=(const TimePoint &rhsTimePoint) {
+    // The time points are different if they are not equal
     return !(
-        this->operator==(rhsTimepoint)
+        this->operator==(rhsTimePoint)
     );
 }
 
@@ -393,46 +396,46 @@ TimePoint::updateConsideredSpatialEntityTypes(const std::bitset<NR_SUBSET_SPECIF
 }
 
 bool
-TimePoint::areEqualNumericStateVariables(const TimePoint &rhsTimepoint) {
+TimePoint::areEqualNumericStateVariables(const TimePoint &rhsTimePoint) {
     // If the number of spatial entities is different return false
-    if (numericStateVariables.size() != rhsTimepoint.numericStateVariables.size()) {
+    if (numericStateVariables.size() != rhsTimePoint.numericStateVariables.size()) {
         return false;
-    // Otherwise check if all numeric state variables of this instance are contained by the right hand side timepoint
+    // Otherwise check if all numeric state variables of this instance are contained by the right hand side time point
     } else {
         for (auto it = numericStateVariables.begin(); it != numericStateVariables.end(); it++) {
             NumericStateVariableId numericStateVariableId = it->first;
 
-            // If the right hand side timepoint does not contain the numeric state variable return false
-            if (!rhsTimepoint.containsNumericStateVariable(numericStateVariableId)) {
+            // If the right hand side time point does not contain the numeric state variable return false
+            if (!rhsTimePoint.containsNumericStateVariable(numericStateVariableId)) {
                 return false;
             }
         }
 
-        // Return true if all numeric state variables of this instance are contained by the right hand side timepoint
+        // Return true if all numeric state variables of this instance are contained by the right hand side time point
         return true;
     }
 }
 
 bool
-TimePoint::areEqualSpatialEntities(const TimePoint &rhsTimepoint) {
-    // Check if all spatial entities of all types are contained by the right hand side timepoint
+TimePoint::areEqualSpatialEntities(const TimePoint &rhsTimePoint) {
+    // Check if all spatial entities of all types are contained by the right hand side time point
     for (std::size_t i = 0; i < NR_SUBSET_SPECIFIC_TYPES; i++) {
-        // If the spatial entities of a specific type are not contained by the right hand side timepoint return false
-        if (!areEqualSpatialEntitiesOfSpecificType(rhsTimepoint, i)) {
+        // If the spatial entities of a specific type are not contained by the right hand side time point return false
+        if (!areEqualSpatialEntitiesOfSpecificType(rhsTimePoint, i)) {
             return false;
         }
     }
 
-    // Return true if all spatial entities of all types are contained by the right hand side timepoint
+    // Return true if all spatial entities of all types are contained by the right hand side time point
     return true;
 }
 
 bool
-TimePoint::areEqualSpatialEntitiesOfSpecificType(const TimePoint &rhsTimepoint,
+TimePoint::areEqualSpatialEntitiesOfSpecificType(const TimePoint &rhsTimePoint,
                                                  const std::size_t &spatialEntityTypeIndex) {
     // If the number of spatial entities of the given type differs then return false
     if (spatialEntities[spatialEntityTypeIndex].size() !=
-        rhsTimepoint.spatialEntities[spatialEntityTypeIndex].size()
+        rhsTimePoint.spatialEntities[spatialEntityTypeIndex].size()
     ) {
         return false;
     } else {
@@ -440,10 +443,10 @@ TimePoint::areEqualSpatialEntitiesOfSpecificType(const TimePoint &rhsTimepoint,
         auto beginIt    = spatialEntities[spatialEntityTypeIndex].begin();
         auto endIt      = spatialEntities[spatialEntityTypeIndex].end();
 
-        // Check if all spatial entities of a specific type are contained by the right hand side timepoint
+        // Check if all spatial entities of a specific type are contained by the right hand side time point
         for (auto it = beginIt; it != endIt; it++) {
-            // If the right hand side timepoint does not contain the spatial entity return false
-            if (!rhsTimepoint.containsSpatialEntity(
+            // If the right hand side time point does not contain the spatial entity return false
+            if (!rhsTimePoint.containsSpatialEntity(
                     (*it),                  // The spatial entity
                     spatialEntityTypeIndex
                 )
@@ -452,7 +455,7 @@ TimePoint::areEqualSpatialEntitiesOfSpecificType(const TimePoint &rhsTimepoint,
             }
         }
 
-        // Return true if all spatial entities of a specific type are contained by the right hand side timepoint
+        // Return true if all spatial entities of a specific type are contained by the right hand side time point
         return true;
     }
 }

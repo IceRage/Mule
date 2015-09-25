@@ -32,6 +32,36 @@ enable_testing()
 
 
 #------------------------------------------------------------
+# Incluse user-defined CMake modules
+#------------------------------------------------------------
+
+# Appends the cmake/modules and cmake/package paths inside the MAKE_MODULE_PATH variable 
+# which stores the directories of additional CMake modules (e.g. MacroOutOfSourceBuild.cmake):
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/package ${CMAKE_MODULE_PATH})
+
+# Include user-defined CMake modules
+include(AddDebugPostfix)
+include(AddExecutableInstallTarget)
+include(AddSample)
+include(AddUnitTest)
+include(GetCurrentDate)
+include(GenerateCustomModelChecker)
+include(UpdateProjectBuildNumber)
+include(UpdateProjectModifiedDate)
+include(MacroOutOfSourceBuild)
+
+
+#------------------------------------------------------------
+# Define global project variables 
+#------------------------------------------------------------
+
+GetCurrentYear(CURRENT_YEAR)
+set(PROJECT_AUTHOR "Ovidiu Pârvu")
+set(PROJECT_AUTHOR_EMAIL "<ovidiu.parvu[AT]gmail.com>")
+
+
+#------------------------------------------------------------
 # Define global project variables using relative paths
 #------------------------------------------------------------
 
@@ -159,29 +189,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(PROJECT_BUILD_TYPE "#define PROJECT_BUILD_TYPE_DEBUG")
 else(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(PROJECT_BUILD_TYPE "")
-endif()
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 
 #------------------------------------------------------------
 # Enforce "out of source" build
 #------------------------------------------------------------
- 
-# Appends the cmake/modules and cmake/package paths inside the MAKE_MODULE_PATH variable 
-# which stores the directories of additional CMake modules (e.g. MacroOutOfSourceBuild.cmake):
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/package ${CMAKE_MODULE_PATH})
- 
-# Incluse user defined CMake modules
-include(AddDebugPostfix)
-include(AddExecutableInstallTarget)
-include(AddSample)
-include(AddUnitTest)
-include(GetCurrentDate)
-include(GenerateCustomModelChecker)
-include(UpdateProjectBuildNumber)
-include(UpdateProjectModifiedDate)
-include(MacroOutOfSourceBuild)
- 
+
 # Check if an "out of source" build folder was chosen
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out of source build.")
 
@@ -195,6 +209,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wfloat-equal -Wmissing-include-dirs")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
     
     if("${CMAKE_BUILD_FOR_PROFILING}" STREQUAL "Yes")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
